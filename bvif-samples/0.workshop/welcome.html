@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bienvenida al taller BVIF</title>
+  <style>
+    :root {
+      --bg: #0b1e3f;
+      --bg-2: #122a54;
+      --ink: #f7f9fc;
+      --ink-dim: #c6d1e3;
+      --accent: #ff9900;
+      --accent-2: #1f9bff;
+      --ok: #26c281;
+      --card: rgba(255,255,255,0.06);
+      --card-border: rgba(255,255,255,0.14);
+      --shadow: 0 10px 30px rgba(0,0,0,0.35);
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0; min-height: 100%;
+      background: radial-gradient(1200px 800px at 20% 10%, #14356a 0%, var(--bg) 60%);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .page {
+      min-height: 100vh; padding: 56px 32px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+    }
+    .topbar {
+      position: fixed; top: 14px; left: 20px; right: 20px;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 12px; color: var(--ink-dim); opacity: .8;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 600; }
+    .brand-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px rgba(255,153,0,.2); }
+
+    .chip {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 14px; border-radius: 999px;
+      background: rgba(255,153,0,0.12); color: var(--accent);
+      border: 1px solid rgba(255,153,0,0.35);
+      font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    }
+
+    .hero { text-align: center; max-width: 1100px; }
+    .hero h1 {
+      font-size: clamp(56px, 8vw, 96px);
+      font-weight: 800; letter-spacing: -0.02em; line-height: 1.05;
+      margin: 24px 0 0;
+    }
+    .hero .meta {
+      margin-top: 28px; font-size: 22px; color: var(--ink-dim); line-height: 1.5;
+      display: inline-flex; flex-wrap: wrap; gap: 24px; justify-content: center; align-items: center;
+    }
+    .hero .meta strong { color: var(--ink); font-weight: 700; }
+    .hero .meta input {
+      background: transparent; border: none; border-bottom: 1px dashed rgba(255,153,0,0.55);
+      color: var(--accent); font: inherit; font-weight: 700;
+      padding: 0 4px 2px; min-width: 140px; outline: none;
+    }
+    .hero .meta input:focus { border-bottom-color: var(--accent); }
+
+    .start-box {
+      margin-top: 56px; max-width: 1100px; width: 100%;
+      background: var(--card); border: 1px solid var(--card-border);
+      border-radius: 22px; padding: 36px 44px;
+      box-shadow: var(--shadow);
+    }
+    .start-box h2 {
+      margin: 0 0 8px; font-size: 28px; font-weight: 800; letter-spacing: -0.01em;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .start-box h2::before {
+      content: ""; width: 10px; height: 10px; border-radius: 50%;
+      background: var(--accent); box-shadow: 0 0 0 4px rgba(255,153,0,0.18);
+    }
+    .start-box .lede { margin: 0 0 24px; font-size: 16px; color: var(--ink-dim); }
+
+    ol.steps { list-style: none; padding: 0; margin: 0; counter-reset: step; }
+    ol.steps li {
+      counter-increment: step;
+      display: grid; grid-template-columns: 56px 1fr; gap: 20px;
+      padding: 16px 0; border-top: 1px solid var(--card-border);
+      align-items: start;
+    }
+    ol.steps li:first-of-type { border-top: none; padding-top: 8px; }
+    ol.steps li::before {
+      content: counter(step);
+      width: 44px; height: 44px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), #ffd166);
+      color: #111; font-weight: 800; font-size: 18px;
+      display: grid; place-items: center;
+    }
+    ol.steps li .title {
+      font-size: 19px; font-weight: 700; color: var(--ink);
+    }
+    ol.steps li .body {
+      margin-top: 4px; font-size: 15px; color: var(--ink-dim); line-height: 1.55;
+    }
+    ol.steps li .body code {
+      background: rgba(0,0,0,0.35); border: 1px solid var(--card-border);
+      border-radius: 5px; padding: 1px 6px; font-size: 13px;
+      color: #c6e3ff; font-family: "SF Mono", Menlo, Consolas, monospace;
+    }
+    ol.steps li .body strong { color: var(--ink); }
+    ol.steps li .body img.preview {
+      display: block; margin: 14px 0 4px;
+      max-width: 360px; width: 100%;
+      border-radius: 10px; border: 1px solid var(--card-border);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+    }
+
+    .footer-note {
+      margin-top: 28px; max-width: 1100px; width: 100%;
+      font-size: 13px; color: var(--ink-dim); text-align: center;
+    }
+
+    .next-row { margin-top: 32px; display: flex; justify-content: center; }
+    .next-btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 14px 24px; border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), #ffd166);
+      color: #111; font-weight: 800; font-size: 16px;
+      letter-spacing: 0.04em; text-decoration: none;
+      box-shadow: 0 6px 20px rgba(255,153,0,0.22);
+      transition: filter .15s ease, transform .15s ease;
+    }
+    .next-btn:hover { filter: brightness(1.06); transform: translateY(-1px); }
+    .next-btn .arrow { font-size: 20px; line-height: 1; }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand"><span class="brand-dot"></span> Taller BVIF</div>
+    <div id="topbar-date"></div>
+  </div>
+
+  <div class="page">
+
+    <div class="hero">
+      <span class="chip">AWS · AI Business Value Identification Framework</span>
+      <h1>Bienvenido/a al<br/>taller BVIF</h1>
+      <div class="meta">
+        <span>Facilitador/a: <input type="text" id="facilitator" placeholder="alias" /></span>
+        <span>·</span>
+        <span>Fecha: <strong id="today"></strong></span>
+      </div>
+    </div>
+
+    <div class="start-box">
+      <h2>Para empezar</h2>
+      <p class="lede">Cinco pasos rápidos antes de comenzar. Una vez que los completes, la presentación del taller se abre automáticamente.</p>
+
+      <ol class="steps">
+        <li>
+          <div>
+            <div class="title">Descarga el zip del taller desde Slack</div>
+            <div class="body">El facilitador/a compartió un archivo zip en <strong>#bvif-workshop-05292026</strong>. Guarda el zip en un lugar que puedas encontrar.</div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <div class="title">Crea una carpeta limpia para esta sesión</div>
+            <div class="body">Una carpeta vacía donde tengas permiso de escritura (p. ej., <code>~/workspace-bvif</code>). Será tu espacio de trabajo durante el resto del taller.</div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <div class="title">Copia <span style="color: var(--accent); font-weight: 800;">el contenido</span> de la carpeta descomprimida (<code>kiro_for_bvif-main</code>) dentro de esa carpeta</div>
+            <div class="body">Descomprime y coloca el contenido dentro. La carpeta <code>.kiro</code> debe quedar <strong>directamente bajo tu carpeta de espacio de trabajo</strong> — no anidada un nivel más abajo.</div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <div class="title">Abre la presentación del taller en tu navegador</div>
+            <div class="body">
+              En <strong>Chrome</strong> (preferido — Edge o Arc también funcionan), abre: <code>bvif-samples/0.workshop/index.html</code>. Desde la ruta relativa dentro de tu carpeta de espacio de trabajo.
+              <p style="margin: 14px 0 0;">Verás esta página:</p>
+              <img class="preview" src="../../docs/images/index-html.png" alt="Vista previa de la pantalla de inicio del taller BVIF con las tarjetas de ruta Interno y General" />
+            </div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <div class="title">Reacciona con "Sí" en la reunión de Zoom</div>
+            <div class="body">
+              Una vez que veas la presentación del taller, envía una reacción de <strong>"Sí"</strong> en Zoom para que el facilitador/a sepa que estás listo/a.
+              <img class="preview" src="../../docs/images/yes-zoom.png" alt="Panel de reacciones de Zoom con la opción Sí (pulgar arriba/marca verde) resaltada" style="max-width: 55px;" />
+            </div>
+          </div>
+        </li>
+      </ol>
+    </div>
+
+    <div class="next-row">
+      <a class="next-btn" href="index.html">Abrir la presentación del taller <span class="arrow">→</span></a>
+    </div>
+
+    <p class="footer-note">¿Atascado/a en algún paso? Escribe al facilitador/a en <strong>#bvif-workshop-05292026</strong> — usa la opción <strong>huddle</strong> para un 1:1 rápido.</p>
+
+  </div>
+
+  <script>
+    // Fecha de hoy — formato largo, p. ej. "28 de mayo de 2026"
+    function todayLong() {
+      const d = new Date();
+      return d.toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
+    }
+    document.getElementById('today').textContent = todayLong();
+    document.getElementById('topbar-date').textContent = todayLong();
+
+    // Intenta detectar el alias del facilitador desde la ruta de la URL (misma heurística que index.html)
+    function detectAliasFromPath() {
+      try {
+        const path = decodeURIComponent(window.location.pathname || '');
+        let m = path.match(/\/Users\/([^/]+)\//i);
+        if (m && m[1]) return m[1];
+        m = path.match(/\/home\/([^/]+)\//i);
+        if (m && m[1]) return m[1];
+      } catch (_) { /* noop */ }
+      return '';
+    }
+    const aliasInput = document.getElementById('facilitator');
+    const detected = detectAliasFromPath();
+    if (detected) aliasInput.value = detected;
+    aliasInput.addEventListener('focus', () => aliasInput.select());
+  </script>
+</body>
+</html>

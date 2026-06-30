@@ -1,0 +1,78 @@
+{
+  "metadata": {
+    "description": "Input variables for the BVIF Monte Carlo simulation. Edit values and re-run montecarlo_simulation.py to recalculate.",
+    "initiative": "Predictive maintenance using AI (Precision Furniture Inc.)",
+    "created": "2026-06-08",
+    "iterations": "Number of Monte Carlo iterations (higher = more stable results, 10000 is recommended)",
+    "triangular_distribution": "Each three-point estimate uses a triangular distribution: [pessimistic, most_likely, optimistic]",
+    "adoption_rate": "Percentage of theoretical value that will actually be realized given organizational adoption (0.0 to 1.0)",
+    "counterfactual": "Where the metric would land in 12 months WITHOUT the AI initiative (based on historical trend extrapolation)"
+  },
+  "simulation_config": {
+    "iterations": 10000,
+    "random_seed": 42
+  },
+  "adoption_rate": {
+    "description": "Shared across all metrics — represents organizational readiness to adopt and use AI recommendations",
+    "pessimistic": 0.60,
+    "most_likely": 0.80,
+    "optimistic": 0.90,
+    "source": "Stakeholder estimates: Maintenance Director (pessimistic), VP Operations (most likely), best-case assumption (optimistic)"
+  },
+  "metrics": [
+    {
+      "id": "M1",
+      "name": "Recovered production capacity (unplanned downtime reduction)",
+      "category": "Increase operational efficiency",
+      "counterfactual_hours_per_quarter": 347,
+      "counterfactual_note": "324 current hours × (3.0% / 2.8%) — projected from 8-quarter deterioration trend",
+      "financial_impact_per_hour": 9971,
+      "financial_impact_note": "Lost contribution margin: 86.7 units/hour × $250/unit × 46% margin",
+      "annualization_factor": 4,
+      "annualization_note": "Quarterly data × 4 = annual",
+      "improvement_target": {
+        "description": "Percentage reduction in unplanned downtime hours from counterfactual",
+        "pessimistic": 0.30,
+        "most_likely": 0.50,
+        "optimistic": 0.65,
+        "source": "WMIA benchmarks (pessimistic), peer case studies at 12-18 months (most likely), best-in-class with full sensor coverage (optimistic)"
+      }
+    },
+    {
+      "id": "M3",
+      "name": "Maintenance cost reduction",
+      "category": "Increase operational efficiency",
+      "counterfactual_cost_per_unit": 12.50,
+      "counterfactual_note": "Trending from $12.00 at ~$0.50/year based on 2-year 10.6% increase",
+      "annual_units": 720000,
+      "annual_units_note": "Annual production volume from scenario document",
+      "annualization_factor": 1,
+      "annualization_note": "Already expressed as annual",
+      "improvement_target": {
+        "description": "Percentage reduction in maintenance cost per unit from counterfactual",
+        "pessimistic": 0.15,
+        "most_likely": 0.20,
+        "optimistic": 0.30,
+        "source": "Finance Director estimate (pessimistic), peer case studies (most likely), best-in-class elimination of reactive costs (optimistic)"
+      }
+    },
+    {
+      "id": "M6",
+      "name": "Delivery penalty avoidance",
+      "category": "Grow revenue",
+      "counterfactual_otd": 0.89,
+      "counterfactual_note": "Trending down from 90.0% at ~1pp/year based on 2.4pp decline over 2 years",
+      "orders_per_quarter": 2340,
+      "penalty_per_late_order": 2500,
+      "annualization_factor": 4,
+      "annualization_note": "Quarterly data × 4 = annual",
+      "improvement_target": {
+        "description": "Absolute percentage points improvement in OTD from counterfactual",
+        "pessimistic": 0.03,
+        "most_likely": 0.05,
+        "optimistic": 0.07,
+        "source": "CRO estimate (pessimistic), calculated from Metric 1 × 68% root cause (most likely), full downtime + scheduling improvement (optimistic)"
+      }
+    }
+  ]
+}

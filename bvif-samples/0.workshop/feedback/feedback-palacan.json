@@ -1,0 +1,30 @@
+[
+  {
+    "alias": "palacan",
+    "date": "2026-05-29",
+    "phase": "Phase 1 — Setup",
+    "step": "1.2 Create the workspace folder",
+    "feedback": "Change workdpace foldere button doesnt work"
+  },
+  {
+    "alias": "palacan",
+    "date": "2026-05-29",
+    "phase": "Phase 1 — Setup",
+    "step": "1.2 Create the workspace folder",
+    "feedback": "Maybe for business users better specify they can create manually the folder If They don't know where to Run this command"
+  },
+  {
+    "alias": "palacan",
+    "date": "2026-05-29",
+    "phase": "Phase 1 — Setup",
+    "step": "1.4 Open the workspace in Kiro",
+    "feedback": "sometimes a gif animation of this process helps a lot for non technical users."
+  },
+  {
+    "alias": "palacan",
+    "date": "2026-05-29",
+    "phase": "Phase 2 — Run the BVIF process",
+    "step": "2.1 Pick a scenario",
+    "feedback": "Include \"cards\" or here to provide info to compare the 2 scenarios here without opening the markdown file."
+  }
+]

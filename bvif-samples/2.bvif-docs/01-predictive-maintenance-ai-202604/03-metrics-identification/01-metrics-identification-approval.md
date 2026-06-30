@@ -1,0 +1,27 @@
+# Stage 3 / Task 1 — Metrics Identification Approval
+
+## Metrics Table
+
+| Business Value Category | Metric Name | Arithmetic Definition | Explanation |
+|---|---|---|---|
+| Increase Operational Efficiency | Equipment Uptime %* | (Total Available Hours - Unplanned Downtime Hours) / Total Available Hours × 100 | Measures the percentage of time manufacturing equipment is operational and available for production. Higher uptime directly translates to increased manufacturing capacity and reduced downtime costs. |
+| Increase Operational Efficiency | Mean Time Between Failures (MTBF)* | Total Operating Hours / Number of Unplanned Failures | Tracks the average time equipment operates before experiencing an unplanned failure. Increasing MTBF indicates improved equipment reliability and reduced disruption frequency. |
+| Increase Operational Efficiency | Maintenance Cost per Unit Produced | Total Maintenance Costs (Planned + Unplanned) / Total Units Produced | Measures the efficiency of maintenance spending relative to production output. Predictive maintenance should reduce this ratio by optimizing maintenance timing and preventing costly emergency repairs. |
+| Increase Operational Efficiency | Emergency Repair Cost | Sum of all unplanned/emergency maintenance expenses | Tracks the total cost of reactive maintenance activities. Predictive maintenance should significantly reduce emergency repairs by catching issues before they become critical failures. |
+| Increase Operational Efficiency | Planned vs Unplanned Maintenance Ratio | Planned Maintenance Hours / Unplanned Maintenance Hours | Measures the shift from reactive to proactive maintenance. A higher ratio indicates better control over maintenance scheduling and reduced emergency interventions. |
+| Grow Revenue | On-Time Delivery Rate %* | (Orders Delivered On-Time / Total Orders) × 100 | Measures the percentage of customer orders fulfilled by the committed delivery date. Improved equipment uptime enables more reliable production schedules and delivery commitments. |
+| Grow Revenue | Customer Retention Rate % | ((Customers at End of Period - New Customers) / Customers at Start of Period) × 100 | Tracks the percentage of customers retained over a period. Consistent delivery performance strengthens customer relationships and reduces churn. |
+| Grow Revenue | Production Capacity Utilization %* | (Actual Production Output / Maximum Production Capacity) × 100 | Measures how much of the available manufacturing capacity is being used. Reduced downtime increases utilization, creating headroom for additional orders without capital investment. |
+
+**Note**: Metrics marked with asterisk (*) are highlighted as most relevant for executive follow-up.
+
+---
+
+## Question 1
+Do you approve these metrics to measure the business value of the predictive maintenance initiative?
+
+A) Approve and continue to Task 2 — Assess Metrics Feasibility
+B) Request changes (please describe what needs adjustment after [Answer]: tag below)
+
+[Answer]: Instead of Equipment Uptime %* , measure the Unplanned downtime rate* . It is an analog metric, but I am already measuring it.  
+Other than that, I agree on the metrics. 

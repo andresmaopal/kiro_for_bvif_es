@@ -1,0 +1,2617 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Taller BVIF — Introducción</title>
+  <style>
+    /* ---------- Base ---------- */
+    :root {
+      --bg: #0b1e3f;
+      --bg-2: #122a54;
+      --ink: #f7f9fc;
+      --ink-dim: #c6d1e3;
+      --accent: #ff9900;       /* AWS orange */
+      --accent-2: #1f9bff;
+      --ok: #26c281;
+      --warn: #f1c40f;
+      --danger: #ff6b6b;
+      --card: rgba(255,255,255,0.06);
+      --card-border: rgba(255,255,255,0.14);
+      --shadow: 0 10px 30px rgba(0,0,0,0.35);
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0; height: 100%;
+      background: radial-gradient(1200px 800px at 20% 10%, #14356a 0%, var(--bg) 60%);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    /* ---------- Slide deck ---------- */
+    .deck { position: relative; width: 100vw; height: 100vh; }
+    .slide {
+      position: absolute; inset: 0;
+      display: none;
+      padding: 56px 72px 88px;
+      animation: fade .35s ease;
+    }
+    .slide.active { display: flex; flex-direction: column; }
+    @keyframes fade { from { opacity: 0; transform: translateY(6px);} to { opacity: 1; transform: none;} }
+
+    h1, h2, h3 { margin: 0; font-weight: 700; letter-spacing: -0.01em; }
+    h1 { font-size: 64px; line-height: 1.05; }
+    h2 { font-size: 40px; line-height: 1.1; }
+    h3 { font-size: 22px; color: var(--ink-dim); font-weight: 500; }
+    p  { line-height: 1.45; color: var(--ink-dim); }
+
+    .eyebrow {
+      display: inline-block; font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--accent); font-weight: 700; margin-bottom: 14px;
+    }
+    .headline { margin-bottom: 28px; }
+
+    /* ---------- Chrome ---------- */
+    .topbar {
+      position: fixed; top: 14px; left: 20px; right: 20px;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 12px; color: var(--ink-dim); opacity: .8; z-index: 5;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 600;}
+    .brand-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px rgba(255,153,0,.2); }
+
+    .progress {
+      position: fixed; left: 0; right: 0; bottom: 0; height: 3px; background: rgba(255,255,255,0.07); z-index: 6;
+    }
+    .progress > span {
+      display: block; height: 100%; width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      transition: width .3s ease;
+    }
+
+    .controls {
+      position: fixed; right: 20px; bottom: 18px; display: flex; gap: 8px; z-index: 6;
+    }
+    .btn {
+      background: var(--card); border: 1px solid var(--card-border); color: var(--ink);
+      padding: 8px 12px; border-radius: 10px; cursor: pointer; font-size: 13px;
+      backdrop-filter: blur(6px);
+    }
+    .btn:hover { background: rgba(255,255,255,0.12); }
+
+    .counter {
+      position: fixed; left: 20px; bottom: 18px; font-size: 12px; color: var(--ink-dim);
+      background: var(--card); border: 1px solid var(--card-border); padding: 6px 10px; border-radius: 10px; z-index: 6;
+    }
+
+    /* ---------- Utility ---------- */
+    .row { display: flex; gap: 24px; }
+    .col { flex: 1; }
+    .center { display: flex; align-items: center; justify-content: center; }
+    .grow { flex: 1; }
+    .stack { display: flex; flex-direction: column; }
+    .muted { color: var(--ink-dim); }
+
+    .card {
+      background: var(--card); border: 1px solid var(--card-border);
+      border-radius: 18px; padding: 22px 24px; box-shadow: var(--shadow);
+    }
+
+    .chip {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 12px; border-radius: 999px;
+      background: rgba(255,153,0,0.12); color: var(--accent);
+      border: 1px solid rgba(255,153,0,0.35);
+      font-size: 12px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+    }
+
+    ul.bullets { list-style: none; padding: 0; margin: 0; }
+    ul.bullets li {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 10px 0; font-size: 20px; color: var(--ink);
+    }
+    ul.bullets li::before {
+      content: ""; flex: 0 0 10px; width: 10px; height: 10px; border-radius: 50%;
+      background: var(--accent); margin-top: 10px;
+    }
+
+    /* ---------- Title slide ---------- */
+    .title-hero { display: flex; flex-direction: column; justify-content: center; flex: 1; }
+    .title-hero h1 { font-size: 92px; }
+    .title-hero .sub { font-size: 24px; color: var(--ink-dim); margin-top: 16px; max-width: 900px; }
+
+    /* ---------- Personas ---------- */
+    .personas { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; flex: 1; align-items: stretch; }
+    .persona {
+      display: flex; flex-direction: column; align-items: center; text-align: center;
+      background: var(--card); border: 1px solid var(--card-border);
+      border-radius: 24px; padding: 36px 28px; position: relative; overflow: hidden;
+    }
+    .persona::after {
+      content: ""; position: absolute; inset: auto -30% -60% -30%; height: 220px;
+      background: radial-gradient(ellipse at center, rgba(255,153,0,.18), transparent 60%);
+      pointer-events: none;
+    }
+    .avatar {
+      width: 180px; height: 180px; border-radius: 50%;
+      background: linear-gradient(135deg, #1e3a74, #0d1f44);
+      display: grid; place-items: center; box-shadow: var(--shadow);
+      border: 2px solid rgba(255,255,255,0.1);
+    }
+    .persona h2 { margin-top: 22px; font-size: 36px; }
+    .persona .role { color: var(--accent); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; font-size: 13px; margin-top: 6px; }
+    .persona .tag { margin-top: 14px; font-size: 16px; color: var(--ink-dim); max-width: 360px; }
+
+    .company-banner {
+      display: flex; align-items: center; gap: 18px;
+      background: var(--card); border: 1px solid var(--card-border);
+      border-radius: 16px; padding: 14px 20px; margin-bottom: 20px;
+    }
+    .company-banner .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--accent-2); }
+
+    /* ---------- Results slide ---------- */
+    .big-value {
+      font-size: 96px; font-weight: 800; letter-spacing: -0.02em;
+      background: linear-gradient(90deg, var(--accent), #ffd166);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .value-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 18px; }
+    .value-strip .mini {
+      background: var(--card); border: 1px solid var(--card-border);
+      border-radius: 14px; padding: 14px 16px;
+    }
+    .value-strip .mini .lbl { font-size: 12px; color: var(--ink-dim); text-transform: uppercase; letter-spacing: 0.08em; }
+    .value-strip .mini .val { font-size: 22px; font-weight: 700; color: var(--ink); margin-top: 4px; }
+
+    .quote-card {
+      background: var(--card); border: 1px solid var(--card-border); border-radius: 16px;
+      padding: 20px 22px; font-style: italic; color: var(--ink); position: relative;
+    }
+    .quote-card::before {
+      content: "“"; position: absolute; top: -18px; left: 10px; font-size: 90px; color: var(--accent);
+      line-height: 1; font-family: Georgia, serif;
+    }
+
+    /* ---------- 7 steps ---------- */
+    .steps { display: grid; grid-template-columns: repeat(7, 1fr); gap: 14px; margin-top: 12px; }
+    .step {
+      background: var(--card); border: 1px solid var(--card-border);
+      border-radius: 14px; padding: 16px 12px; text-align: center; position: relative;
+    }
+    .step .num {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: var(--accent); color: #111; font-weight: 800;
+      display: grid; place-items: center; margin: 0 auto 10px;
+    }
+    .step .lbl { font-size: 13px; color: var(--ink); font-weight: 600; line-height: 1.25; }
+    .phase-band { display: grid; grid-template-columns: 2fr 2fr 3fr; gap: 14px; margin-top: 12px; }
+    .phase {
+      padding: 10px 14px; border-radius: 10px; text-align: center; font-weight: 700; font-size: 13px; letter-spacing: 0.05em; text-transform: uppercase;
+    }
+    .phase.discover { background: rgba(31,155,255,0.15); color: #7ec3ff; border: 1px solid rgba(31,155,255,.35); }
+    .phase.metrics  { background: rgba(38,194,129,0.15); color: #6be0a7; border: 1px solid rgba(38,194,129,.35); }
+    .phase.quant    { background: rgba(255,153,0,0.15); color: #ffc778;  border: 1px solid rgba(255,153,0,.35); }
+
+    /* ---------- Agenda ---------- */
+    .agenda { display: grid; grid-template-columns: 1fr; gap: 10px; max-width: 760px; margin: 0 auto; }
+    .agenda-row {
+      display: grid; grid-template-columns: 60px 1fr 120px;
+      align-items: center; gap: 16px;
+      background: var(--card); border: 1px solid var(--card-border); border-radius: 12px; padding: 14px 18px;
+    }
+    .agenda-row .n {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), #ffd166);
+      color: #111; font-weight: 800; display: grid; place-items: center;
+    }
+    .agenda-row .t { font-size: 18px; font-weight: 600; }
+    .agenda-row .d { text-align: right; color: var(--accent); font-weight: 700; }
+
+    /* ---------- Workshop ---------- */
+    .obj-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 18px; }
+    .obj {
+      background: var(--card); border: 1px solid var(--card-border);
+      border-radius: 16px; padding: 22px; text-align: center;
+    }
+    .obj .icon { width: 56px; height: 56px; margin: 0 auto 14px; }
+    .obj h3 { color: var(--ink); font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+    .obj p { font-size: 14px; }
+
+    .pill {
+      display: inline-block; padding: 4px 10px; border-radius: 999px;
+      background: rgba(31,155,255,0.15); color: #7ec3ff; border: 1px solid rgba(31,155,255,.35);
+      font-size: 12px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+    }
+
+    /* ---------- Thank you ---------- */
+    .thanks { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+    .thanks h1 { font-size: 140px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; background-clip: text; color: transparent;}
+    .thanks p { font-size: 22px; }
+
+    /* ---------- Presenter notes ---------- */
+    .notes-panel {
+      position: fixed; right: 20px; bottom: 60px;
+      width: 420px; max-height: 50vh; overflow: auto;
+      background: rgba(10, 20, 40, 0.95); border: 1px solid var(--card-border);
+      border-radius: 14px; padding: 16px 18px; font-size: 13px; color: var(--ink-dim);
+      display: none; z-index: 8; box-shadow: var(--shadow);
+    }
+    .notes-panel.visible { display: block; }
+    .notes-panel h4 { margin: 0 0 8px; color: var(--accent); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; }
+    .notes-panel p, .notes-panel li { color: var(--ink-dim); line-height: 1.5; }
+    .notes-panel ul { padding-left: 18px; }
+
+    /* ---------- Diagrams ---------- */
+    .diagram { width: 100%; max-width: 1000px; margin: 0 auto; }
+
+    /* Appendix */
+    .appendix-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; flex: 1; }
+    .appendix-grid .card h3 { color: var(--ink); font-size: 20px; margin-bottom: 8px; }
+
+    /* Responsive safety */
+    @media (max-width: 1100px) {
+      h1 { font-size: 48px; } h2 { font-size: 32px; }
+      .title-hero h1 { font-size: 64px; }
+      .big-value { font-size: 72px; }
+      .steps { grid-template-columns: repeat(4, 1fr); }
+    }
+
+    /* ---------- Landing & path screens ---------- */
+    .screen {
+      position: fixed; inset: 0;
+      display: none;
+      align-items: center; justify-content: center;
+      padding: 56px 72px;
+      background: radial-gradient(1200px 800px at 20% 10%, #14356a 0%, var(--bg) 60%);
+      z-index: 10;
+    }
+    .screen.active { display: flex; }
+    .screen-inner { max-width: 1100px; width: 100%; text-align: center; }
+    .screen-inner h1 { font-size: 72px; margin-top: 18px; }
+    .screen-inner .sub { font-size: 22px; color: var(--ink-dim); margin-top: 16px; max-width: 760px; margin-left: auto; margin-right: auto; }
+
+    .path-options {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+      margin-top: 56px; text-align: left;
+    }
+    .path-btn {
+      background: var(--card); border: 1px solid var(--card-border);
+      border-radius: 18px; padding: 28px 28px;
+      color: var(--ink); cursor: pointer; transition: transform .15s ease, border-color .15s ease, background .15s ease;
+      display: flex; flex-direction: column; gap: 10px;
+      font-family: inherit;
+    }
+    .path-btn:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255,153,0,0.55);
+      background: rgba(255,255,255,0.09);
+    }
+    .path-btn .path-eyebrow {
+      font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--accent); font-weight: 700;
+    }
+    .path-btn .path-title { font-size: 26px; font-weight: 700; color: var(--ink); }
+    .path-btn .path-desc  { font-size: 15px; color: var(--ink-dim); line-height: 1.5; }
+    .path-btn[disabled] { opacity: 0.65; cursor: not-allowed; }
+    .path-btn[disabled]:hover { transform: none; border-color: var(--card-border); background: var(--card); }
+    .path-btn .path-tag {
+      display: inline-block; align-self: flex-start; margin-top: 6px;
+      padding: 4px 10px; border-radius: 999px; font-size: 11px;
+      background: rgba(31,155,255,0.15); color: #7ec3ff;
+      border: 1px solid rgba(31,155,255,.35);
+      font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+    }
+    .path-btn .path-shortcut {
+      align-self: flex-start; margin-top: 4px;
+      font-size: 13px; font-weight: 600;
+      color: var(--accent); text-decoration: none;
+      border-bottom: 1px dashed rgba(255,153,0,0.5);
+      padding-bottom: 1px;
+    }
+    .path-btn .path-shortcut:hover { color: #ffd166; border-bottom-color: #ffd166; }
+
+    .back-btn {
+      position: fixed; left: 20px; top: 14px; z-index: 11;
+      background: var(--card); border: 1px solid var(--card-border); color: var(--ink);
+      padding: 8px 14px; border-radius: 10px; cursor: pointer; font-size: 13px;
+      backdrop-filter: blur(6px); display: none;
+    }
+    .back-btn.visible { display: inline-flex; }
+    .back-btn:hover { background: rgba(255,255,255,0.12); }
+
+    /* Hide deck chrome (counter, controls, progress) until a path is selected */
+    body[data-route="landing"] .counter,
+    body[data-route="landing"] .controls,
+    body[data-route="landing"] .progress { display: none; }
+
+    /* Show the right deck based on the active route */
+    body[data-route="landing"]  #deck,
+    body[data-route="landing"]  #deck-internal,
+    body[data-route="internal"] #deck,
+    body[data-route="general"]  #deck-internal { display: none; }
+
+    /* Show the landing screen only on the landing route */
+    body[data-route="general"]  #screen-landing,
+    body[data-route="internal"] #screen-landing { display: none; }
+
+    /* ---------- Step-by-step guide ---------- */
+    .tree-step {
+      display: flex; align-items: center; gap: 10px; width: 100%;
+      background: transparent; border: none; border-left: 3px solid transparent;
+      color: var(--ink-dim); text-align: left;
+      padding: 10px 14px; margin: 2px 0;
+      font: inherit; font-size: 14px; line-height: 1.4;
+      cursor: pointer; border-radius: 0 8px 8px 0;
+      transition: background .15s ease, color .15s ease, border-color .15s ease;
+    }
+    .tree-step:hover { background: rgba(255,255,255,0.06); color: var(--ink); }
+    .tree-step.active {
+      background: rgba(255,153,0,0.12);
+      color: var(--ink); font-weight: 600;
+      border-left-color: var(--accent);
+    }
+    .tree-step .step-check {
+      flex: 0 0 16px; width: 16px; height: 16px;
+      border: 1.5px solid var(--card-border); border-radius: 4px;
+      background: rgba(0,0,0,0.25);
+      display: grid; place-items: center;
+      transition: background .15s ease, border-color .15s ease;
+    }
+    .tree-step .step-check:hover { border-color: var(--accent); }
+    .tree-step .step-check::before {
+      content: ""; width: 10px; height: 10px;
+      background: var(--accent);
+      clip-path: polygon(14% 44%, 0 60%, 40% 100%, 100% 20%, 84% 7%, 38% 70%);
+      opacity: 0; transition: opacity .15s ease;
+    }
+    .tree-step.done .step-check { background: rgba(255,153,0,0.18); border-color: var(--accent); }
+    .tree-step.done .step-check::before { opacity: 1; }
+    .tree-step.done .step-label { text-decoration: line-through; opacity: 0.55; }
+    .tree-step .step-label { flex: 1; min-width: 0; }
+
+    .tree-reset-btn {
+      background: transparent; border: 1px solid var(--card-border); color: var(--ink-dim);
+      padding: 6px 12px; border-radius: 8px; font-size: 12px; cursor: pointer;
+      letter-spacing: 0.05em; text-transform: uppercase; font-weight: 600;
+      transition: background .15s ease, color .15s ease, border-color .15s ease;
+    }
+    .tree-reset-btn:hover { background: rgba(255,255,255,0.08); color: var(--ink); border-color: var(--ink-dim); }
+    .step-panel { display: none; }
+    .step-panel.active { display: flex; flex-direction: column; gap: 16px; }
+    .step-panel h3 { font-size: 30px; margin: 0; color: var(--ink); }
+    .step-panel .step-lede { font-size: 18px; color: var(--ink-dim); line-height: 1.5; margin: 0; }
+    .step-panel pre {
+      background: rgba(0,0,0,0.35); border: 1px solid var(--card-border);
+      border-radius: 12px; padding: 14px 16px; margin: 0;
+      font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 14px;
+      color: #c6e3ff; overflow-x: auto;
+      white-space: pre;
+    }
+    .code-block { position: relative; }
+    .code-block .copy-btn {
+      position: absolute; top: 8px; right: 8px;
+      background: rgba(255,255,255,0.08); border: 1px solid var(--card-border);
+      color: var(--ink-dim); border-radius: 6px;
+      padding: 4px 8px; font-size: 11px; cursor: pointer;
+      letter-spacing: 0.05em; text-transform: uppercase; font-weight: 600;
+      transition: background .15s ease, color .15s ease, border-color .15s ease;
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+    .code-block .copy-btn:hover { background: rgba(255,153,0,0.18); color: var(--ink); border-color: var(--accent); }
+    .code-block .copy-btn.copied { background: rgba(38,194,129,0.22); color: #6be0a7; border-color: rgba(38,194,129,0.55); }
+    .code-block .copy-btn svg { width: 12px; height: 12px; }
+    .step-panel ul { margin: 0; padding-left: 22px; color: var(--ink); font-size: 16px; line-height: 1.6; }
+    .step-panel a { color: var(--accent-2); }
+    .step-panel code {
+      background: rgba(0,0,0,0.3); border: 1px solid var(--card-border);
+      border-radius: 5px; padding: 1px 6px; font-size: 13px; color: #c6e3ff;
+      font-family: "SF Mono", Menlo, Consolas, monospace;
+    }
+    .step-panel .step-note {
+      border-left: 3px solid var(--accent); background: rgba(255,153,0,0.08);
+      padding: 12px 14px; border-radius: 0 10px 10px 0;
+      font-size: 14px; color: var(--ink-dim); line-height: 1.5;
+    }
+    .step-panel .step-image {
+      max-width: 100%; height: auto;
+      border-radius: 10px; border: 1px solid var(--card-border);
+    }
+    .step-option-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .step-option {
+      background: rgba(255,255,255,0.04); border: 1px solid var(--card-border);
+      border-radius: 12px; padding: 14px 16px;
+    }
+    .step-option .lbl { font-size: 12px; color: var(--accent); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+    .step-option .ttl { font-size: 16px; font-weight: 700; color: var(--ink); margin: 4px 0 8px; }
+    button.step-option.tree-jump {
+      width: 100%; transition: background .15s ease, border-color .15s ease, transform .15s ease;
+    }
+    button.step-option.tree-jump:hover {
+      background: rgba(255,153,0,0.10);
+      border-color: rgba(255,153,0,0.45);
+      transform: translateY(-1px);
+    }
+
+    /* ---------- Per-step feedback form column ---------- */
+    .step-with-form {
+      display: grid; grid-template-columns: 1.7fr 1fr; gap: 22px;
+      flex: 1; min-height: 0;
+    }
+    .step-with-form > .step-content { display: flex; flex-direction: column; gap: 16px; min-width: 0; overflow-y: auto; padding-right: 4px; }
+    .feedback-form {
+      background: rgba(255,255,255,0.04); border: 1px solid var(--card-border);
+      border-radius: 14px; padding: 18px 18px 16px;
+      display: flex; flex-direction: column; gap: 12px;
+      align-self: flex-start;
+      max-height: 100%;
+    }
+    .feedback-form h4 {
+      margin: 0; color: var(--ink); font-size: 16px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .feedback-form h4::before {
+      content: ""; width: 8px; height: 8px; border-radius: 50%;
+      background: var(--accent); box-shadow: 0 0 0 4px rgba(255,153,0,0.18);
+    }
+    .feedback-form .form-sub { font-size: 12px; color: var(--ink-dim); margin: -6px 0 4px; line-height: 1.4; }
+    .feedback-form label {
+      display: flex; flex-direction: column; gap: 4px;
+      font-size: 11px; color: var(--ink-dim);
+      letter-spacing: 0.06em; text-transform: uppercase; font-weight: 600;
+    }
+    .feedback-form input,
+    .feedback-form select,
+    .feedback-form textarea {
+      background: rgba(0,0,0,0.30); border: 1px solid var(--card-border);
+      border-radius: 8px; padding: 8px 10px;
+      color: var(--ink); font-family: inherit; font-size: 14px;
+      letter-spacing: 0; text-transform: none; font-weight: 400;
+      resize: vertical;
+    }
+    .feedback-form select {
+      appearance: none; -webkit-appearance: none;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23c6d1e3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 30px;
+    }
+    .feedback-form select option { background: #122a54; color: var(--ink); }
+    .feedback-form textarea { min-height: 90px; }
+    .feedback-form input:focus,
+    .feedback-form select:focus,
+    .feedback-form textarea:focus {
+      outline: none; border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(255,153,0,0.12);
+    }
+    .feedback-form .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .feedback-form .form-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .feedback-form button[type="submit"] {
+      background: linear-gradient(135deg, var(--accent), #ffd166);
+      border: none; color: #111; font-weight: 700;
+      padding: 9px 16px; border-radius: 8px; cursor: pointer;
+      font-size: 13px; letter-spacing: 0.04em;
+    }
+    .feedback-form button[type="submit"]:hover { filter: brightness(1.06); }
+    .feedback-form button[type="submit"]:disabled { opacity: 0.6; cursor: not-allowed; filter: none; }
+    .feedback-form .pick-btn {
+      background: transparent; border: 1px solid var(--card-border); color: var(--ink-dim);
+      padding: 8px 12px; border-radius: 8px; cursor: pointer;
+      font-size: 12px; font-weight: 600; letter-spacing: 0.04em;
+    }
+    .feedback-form .pick-btn:hover { background: rgba(255,255,255,0.08); color: var(--ink); border-color: var(--accent); }
+
+    /* Top-of-form workspace picker (highlighted until clicked) */
+    .feedback-form .workspace-cta {
+      display: flex; flex-direction: column; gap: 8px;
+      padding: 14px 14px 12px; border-radius: 12px;
+      background: rgba(255,153,0,0.10); border: 1px solid rgba(255,153,0,0.45);
+      box-shadow: 0 0 0 0 rgba(255,153,0,0.55);
+      animation: workspace-pulse 1.8s ease-in-out infinite;
+      transition: background .2s ease, border-color .2s ease, box-shadow .2s ease, animation .2s ease;
+    }
+    .feedback-form .workspace-cta.connected {
+      background: rgba(38,194,129,0.10); border-color: rgba(38,194,129,0.45);
+      box-shadow: none; animation: none;
+    }
+    @keyframes workspace-pulse {
+      0%   { box-shadow: 0 0 0 0 rgba(255,153,0,0.45); }
+      70%  { box-shadow: 0 0 0 10px rgba(255,153,0,0); }
+      100% { box-shadow: 0 0 0 0 rgba(255,153,0,0); }
+    }
+    .feedback-form .workspace-cta .pick-btn {
+      align-self: flex-start;
+      background: linear-gradient(135deg, var(--accent), #ffd166);
+      color: #111; border: none; font-weight: 700; letter-spacing: 0.04em;
+      padding: 10px 16px; font-size: 13px;
+    }
+    .feedback-form .workspace-cta .pick-btn:hover { filter: brightness(1.06); }
+    .feedback-form .workspace-cta.connected .pick-btn {
+      background: transparent; color: var(--ink-dim);
+      border: 1px solid var(--card-border); font-weight: 600;
+    }
+    .feedback-form .workspace-cta.connected .pick-btn:hover {
+      background: rgba(255,255,255,0.08); color: var(--ink); border-color: var(--accent);
+    }
+    .feedback-form .workspace-cta .cta-label {
+      font-size: 13px; color: var(--ink); font-weight: 600;
+    }
+    .feedback-form .workspace-cta.connected .cta-label { color: #6be0a7; }
+    .feedback-form .workspace-cta .cta-note {
+      font-size: 11px; color: var(--ink-dim); line-height: 1.45;
+    }
+
+    /* ---------- Step 2.4 monitor: live state checklist ---------- */
+    .state-monitor {
+      background: rgba(255,255,255,0.04); border: 1px solid var(--card-border);
+      border-radius: 14px; padding: 16px 18px;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .state-monitor .sm-row {
+      display: flex; align-items: flex-end; gap: 10px; flex-wrap: wrap;
+    }
+    .state-monitor label {
+      display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 200px;
+      font-size: 11px; color: var(--ink-dim);
+      letter-spacing: 0.06em; text-transform: uppercase; font-weight: 600;
+    }
+    .state-monitor select {
+      appearance: none; -webkit-appearance: none;
+      background: rgba(0,0,0,0.30); border: 1px solid var(--card-border);
+      border-radius: 8px; padding: 8px 30px 8px 10px;
+      color: var(--ink); font-family: inherit; font-size: 14px;
+      letter-spacing: 0; text-transform: none; font-weight: 400;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23c6d1e3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+    }
+    .state-monitor select option { background: #122a54; color: var(--ink); }
+    .state-monitor select:focus {
+      outline: none; border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(255,153,0,0.12);
+    }
+    .state-monitor .sm-refresh {
+      background: transparent; border: 1px solid var(--card-border); color: var(--ink-dim);
+      padding: 8px 12px; border-radius: 8px; cursor: pointer;
+      font-size: 12px; font-weight: 600; letter-spacing: 0.04em;
+    }
+    .state-monitor .sm-refresh:hover { background: rgba(255,255,255,0.08); color: var(--ink); border-color: var(--accent); }
+
+    .state-monitor ul.stage-list { margin: 0; padding: 0; list-style: none; }
+    .state-monitor ul.stage-list li {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 6px 0; font-size: 14px; color: var(--ink); line-height: 1.4;
+    }
+    .state-monitor ul.stage-list li.indent { padding-left: 24px; font-size: 13px; color: var(--ink-dim); }
+    .state-monitor ul.stage-list .sm-check {
+      flex: 0 0 16px; width: 16px; height: 16px;
+      border: 1.5px solid var(--card-border); border-radius: 4px;
+      background: rgba(0,0,0,0.25);
+      display: grid; place-items: center; margin-top: 2px;
+    }
+    .state-monitor ul.stage-list li.done .sm-check {
+      background: rgba(38,194,129,0.20); border-color: rgba(38,194,129,0.55);
+    }
+    .state-monitor ul.stage-list li.done .sm-check::before {
+      content: ""; width: 10px; height: 10px;
+      background: #6be0a7;
+      clip-path: polygon(14% 44%, 0 60%, 40% 100%, 100% 20%, 84% 7%, 38% 70%);
+    }
+    .state-monitor ul.stage-list li.done span { text-decoration: line-through; opacity: 0.6; }
+    .state-monitor .sm-empty {
+      font-size: 13px; color: var(--ink-dim); padding: 8px 4px;
+    }
+
+    /* ---------- Final-feedback survey ---------- */
+    .final-survey { display: flex; flex-direction: column; gap: 18px; margin-top: 12px; }
+    .final-survey .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .final-survey label {
+      display: flex; flex-direction: column; gap: 4px;
+      font-size: 11px; color: var(--ink-dim);
+      letter-spacing: 0.06em; text-transform: uppercase; font-weight: 600;
+    }
+    .final-survey input,
+    .final-survey textarea {
+      background: rgba(0,0,0,0.30); border: 1px solid var(--card-border);
+      border-radius: 8px; padding: 8px 10px;
+      color: var(--ink); font-family: inherit; font-size: 14px;
+      letter-spacing: 0; text-transform: none; font-weight: 400;
+      resize: vertical;
+    }
+    .final-survey textarea { min-height: 110px; }
+    .final-survey input:focus,
+    .final-survey textarea:focus {
+      outline: none; border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(255,153,0,0.12);
+    }
+    .final-survey fieldset {
+      border: 1px solid var(--card-border); border-radius: 12px;
+      padding: 14px 18px 16px; margin: 0;
+      background: rgba(255,255,255,0.03);
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .final-survey legend {
+      padding: 0 8px; font-size: 14px; color: var(--ink); font-weight: 600;
+      line-height: 1.4;
+    }
+    .final-survey .rating-help {
+      font-size: 12px; color: var(--ink-dim); line-height: 1.45; margin: -4px 0 4px;
+    }
+    .final-survey .rating { display: flex; gap: 8px; flex-wrap: wrap; }
+    .final-survey .rating .pip {
+      width: 40px; height: 40px; border-radius: 8px;
+      background: rgba(0,0,0,0.30); border: 1px solid var(--card-border);
+      color: var(--ink); font-size: 16px; font-weight: 700; cursor: pointer;
+      display: grid; place-items: center;
+      transition: background .15s ease, border-color .15s ease, color .15s ease, transform .1s ease;
+    }
+    .final-survey .rating .pip:hover { background: rgba(255,153,0,0.10); border-color: rgba(255,153,0,0.45); }
+    .final-survey .rating .pip.selected {
+      background: linear-gradient(135deg, var(--accent), #ffd166);
+      border-color: rgba(255,153,0,0.7); color: #111;
+      transform: translateY(-1px);
+    }
+    .final-survey .form-actions { display: flex; gap: 10px; align-items: center; }
+    .final-survey .form-actions button[type="submit"] {
+      background: linear-gradient(135deg, var(--accent), #ffd166);
+      border: none; color: #111; font-weight: 800;
+      padding: 10px 20px; border-radius: 8px; cursor: pointer;
+      font-size: 14px; letter-spacing: 0.04em;
+    }
+    .final-survey .form-actions button[type="submit"]:hover { filter: brightness(1.06); }
+    .final-survey .form-actions button[type="submit"]:disabled { opacity: 0.6; cursor: not-allowed; filter: none; }
+    .final-survey .form-status {
+      font-size: 12px; line-height: 1.45; color: var(--ink-dim);
+      padding: 8px 10px; border-radius: 8px;
+      background: rgba(255,255,255,0.05); border: 1px solid var(--card-border);
+    }
+    .final-survey .form-status.ok    { color: #6be0a7; border-color: rgba(38,194,129,0.45); background: rgba(38,194,129,0.10); }
+    .final-survey .form-status.warn  { color: #ffc778; border-color: rgba(255,153,0,0.45);  background: rgba(255,153,0,0.10); }
+    .final-survey .form-status.error { color: #ff8a8a; border-color: rgba(255,107,107,0.45); background: rgba(255,107,107,0.10); }
+
+    /* Reuse the mic button look inside the final survey */
+    .final-survey .mic-btn {
+      background: transparent; border: 1px solid var(--card-border); color: var(--ink-dim);
+      width: 36px; height: 36px; border-radius: 8px; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      transition: background .15s ease, color .15s ease, border-color .15s ease, box-shadow .2s ease;
+    }
+    .final-survey .mic-btn:hover { background: rgba(255,255,255,0.08); color: var(--ink); border-color: var(--accent); }
+    .final-survey .mic-btn svg { width: 18px; height: 18px; }
+    .final-survey .mic-btn.recording {
+      color: #ff6b6b; border-color: #ff6b6b;
+      box-shadow: 0 0 0 0 rgba(255,107,107,0.7);
+      animation: mic-pulse 1.4s infinite;
+    }
+
+    .feedback-form .mic-btn {
+      background: transparent; border: 1px solid var(--card-border); color: var(--ink-dim);
+      width: 36px; height: 36px; border-radius: 8px; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      transition: background .15s ease, color .15s ease, border-color .15s ease, box-shadow .2s ease;
+    }
+    .feedback-form .mic-btn:hover { background: rgba(255,255,255,0.08); color: var(--ink); border-color: var(--accent); }
+    .feedback-form .mic-btn svg { width: 18px; height: 18px; }
+    .feedback-form .mic-btn.recording {
+      color: #ff6b6b; border-color: #ff6b6b;
+      box-shadow: 0 0 0 0 rgba(255,107,107,0.7);
+      animation: mic-pulse 1.4s infinite;
+    }
+    @keyframes mic-pulse {
+      0%   { box-shadow: 0 0 0 0 rgba(255,107,107,0.6); }
+      70%  { box-shadow: 0 0 0 10px rgba(255,107,107,0); }
+      100% { box-shadow: 0 0 0 0 rgba(255,107,107,0); }
+    }
+    .feedback-form .form-status {
+      font-size: 12px; line-height: 1.4; color: var(--ink-dim);
+      padding: 8px 10px; border-radius: 8px;
+      background: rgba(255,255,255,0.05); border: 1px solid var(--card-border);
+    }
+    .feedback-form .form-status.ok      { color: #6be0a7; border-color: rgba(38,194,129,0.45); background: rgba(38,194,129,0.10); }
+    .feedback-form .form-status.warn    { color: #ffc778; border-color: rgba(255,153,0,0.45);  background: rgba(255,153,0,0.10); }
+    .feedback-form .form-status.error   { color: #ff8a8a; border-color: rgba(255,107,107,0.45); background: rgba(255,107,107,0.10); }
+  </style>
+</head>
+<body data-route="landing">
+
+<div class="topbar">
+  <div class="brand"><span class="brand-dot"></span> Taller BVIF</div>
+  <div>Abril 2026</div>
+</div>
+
+<button class="back-btn" id="backBtn">← Volver al inicio</button>
+
+<!-- Landing screen — choose a path -->
+<section class="screen active" id="screen-landing">
+  <div class="screen-inner">
+    <span class="chip">AWS · AI Business Value Identification Framework</span>
+    <h1>Taller BVIF</h1>
+    <p class="sub">De una idea de IA en lenguaje sencillo a un caso de negocio cuantificado y basado en evidencia — en siete pasos.</p>
+    <p style="margin-top: 12px; font-size: 13px; color: var(--ink-dim);">
+      ¿Necesitas las instrucciones de preparación? <a href="welcome.html" style="color: var(--accent-2); text-decoration: none; border-bottom: 1px dashed var(--accent-2);">Abre la página de bienvenida →</a>
+    </p>
+
+    <div class="path-options">
+      <button class="path-btn" data-path="internal">
+        <span class="path-eyebrow">Ruta 1</span>
+        <span class="path-title">Taller interno</span>
+        <span class="path-desc">Adaptado para audiencias internas de AWS. Incluye contexto específico de AWS, referencias a herramientas internas y enlaces a la Wiki, SharePoint y el repositorio de GitLab.</span>
+        <span class="path-tag">Disponible</span>
+        <a class="path-shortcut" data-jump-step="1.1" href="#" onclick="event.stopPropagation();">Ir a la preparación →</a>
+      </button>
+
+      <button class="path-btn" data-path="general">
+        <span class="path-eyebrow">Ruta 2</span>
+        <span class="path-title">Taller BVIF general</span>
+        <span class="path-desc">La presentación estándar, independiente de la audiencia. Recorre el escenario de Precision Furniture, el proceso BVIF de 7 etapas y la sesión práctica en Kiro.</span>
+        <span class="path-tag">Disponible</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- Internal path — multi-slide deck -->
+<div class="deck" id="deck-internal">
+
+  <!-- INTERNAL SLIDE 1: What is BVIF and why it matters -->
+  <section class="slide active" data-notes="Abre con el porqué — unos 60 segundos. BVIF convierte una idea de IA en lenguaje sencillo en un caso de negocio cuantificado y basado en evidencia. Por qué importa internamente: mantiene las iniciativas ancladas en los beneficios de negocio que aportan, acorta el camino hacia un caso de negocio defendible, da a cada equipo de cuenta un lenguaje común y produce un artefacto auditable que sobrevive a los traspasos.">
+    <span class="eyebrow">Qué es BVIF — y por qué importa</span>
+    <h2 class="headline">De una idea de IA en lenguaje sencillo a valor cuantificado</h2>
+
+    <div style="flex:1; display:grid; grid-template-rows: 3fr 2fr; gap: 32px; max-width: 1320px; width: 100%; margin: 18px auto 0;">
+
+      <!-- Big idea — top half, vertically centered -->
+      <div style="display:flex; align-items:center; justify-content:center; padding: 24px 48px;">
+        <p style="margin: 0; text-align:center; font-size:42px; line-height:1.3; color:var(--ink);">
+          Un marco sistemático para guiar la extracción del valor cuantitativo de una iniciativa de IA — <span style="color:var(--accent); font-weight:700;">anclado en evidencia, trazable de principio a fin.</span>
+        </p>
+      </div>
+
+      <!-- Supporting cards — bottom half, stretched to fill the row -->
+      <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 18px;">
+        <div class="card" style="padding: 28px 26px; display:flex; flex-direction:column; justify-content:center;">
+          <h3 style="color:var(--ink); font-size:22px; margin-bottom:12px;">El valor de negocio en el centro</h3>
+          <p style="font-size:16px; line-height:1.45;">Mantiene las iniciativas de IA ancladas en los beneficios de negocio que aportan.</p>
+        </div>
+        <div class="card" style="padding: 28px 26px; display:flex; flex-direction:column; justify-content:center;">
+          <h3 style="color:var(--ink); font-size:22px; margin-bottom:12px;">Anclado en datos del cliente</h3>
+          <p style="font-size:16px; line-height:1.45;">Sin adivinar — ancla el valor de cada iniciativa en datos del cliente y comunica en un lenguaje de negocio compartido.</p>
+        </div>
+        <div class="card" style="padding: 28px 26px; display:flex; flex-direction:column; justify-content:center;">
+          <h3 style="color:var(--ink); font-size:22px; margin-bottom:12px;">Comparación cuantitativa</h3>
+          <p style="font-size:16px; line-height:1.45;">Compara iniciativas lado a lado — y sigue la misma iniciativa a lo largo del tiempo.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- INTERNAL SLIDE 2: The BVIF process -->
+  <section class="slide" data-notes="Ahora el cómo — 60 segundos. BVIF se organiza en tres fases y siete etapas. Descubrimiento (azul): las etapas 1–2 definen la iniciativa y la mapean a categorías de valor de negocio. Métricas (verde): las etapas 3–4 identifican métricas candidatas y las ajustan según la factibilidad. Cuantificación (naranja): las etapas 5–7 recolectan datos, calculan el valor anualizado y producen el documento de resultados finales.">
+    <span class="eyebrow">El proceso BVIF</span>
+    <h2 class="headline">Tres fases, siete etapas</h2>
+
+    <div style="flex:1; display:grid; grid-template-rows: 3fr 2fr; gap: 24px; max-width: 1320px; width: 100%; margin: 18px auto 0;">
+
+      <!-- Process box -->
+      <div style="background: var(--card); border: 1px solid var(--card-border); border-radius: 22px; padding: 32px 36px; display:flex; flex-direction:column; gap: 22px;">
+        <div>
+          <h3 style="margin: 0 0 6px; color: var(--ink); font-size: 32px; font-weight: 800; letter-spacing: -0.01em;">El proceso</h3>
+          <div style="font-size: 18px; color: var(--ink-dim);">BVIF — tres fases, siete etapas</div>
+        </div>
+
+        <div class="phase-band" style="margin-top: 0;">
+          <div class="phase discover" style="font-size:15px; padding:14px 16px;">🔵  Descubrimiento</div>
+          <div class="phase metrics"  style="font-size:15px; padding:14px 16px;">🟢  Métricas</div>
+          <div class="phase quant"    style="font-size:15px; padding:14px 16px;">🟡  Cuantificación</div>
+        </div>
+
+        <div class="steps" style="margin-top: 0; flex:1; align-items:stretch;">
+          <div class="step" style="border-color: rgba(31,155,255,0.5); padding: 22px 14px; display:flex; flex-direction:column; justify-content:center;"><div class="num">1</div><div class="lbl" style="font-size:15px;">Define la iniciativa</div><div style="font-size:11px; color:var(--accent); margin-top:8px;">← Inicio — La idea</div></div>
+          <div class="step" style="padding: 22px 14px; display:flex; flex-direction:column; justify-content:center;"><div class="num">2</div><div class="lbl" style="font-size:15px;">Extrae categorías de valor de negocio</div></div>
+          <div class="step" style="padding: 22px 14px; display:flex; flex-direction:column; justify-content:center;"><div class="num">3</div><div class="lbl" style="font-size:15px;">Identifica métricas</div></div>
+          <div class="step" style="padding: 22px 14px; display:flex; flex-direction:column; justify-content:center;"><div class="num">4</div><div class="lbl" style="font-size:15px;">Ajusta por factibilidad</div></div>
+          <div class="step" style="padding: 22px 14px; display:flex; flex-direction:column; justify-content:center;"><div class="num">5</div><div class="lbl" style="font-size:15px;">Recolecta datos</div></div>
+          <div class="step" style="padding: 22px 14px; display:flex; flex-direction:column; justify-content:center;"><div class="num">6</div><div class="lbl" style="font-size:15px;">Calcula el valor de negocio</div></div>
+          <div class="step" style="border-color: rgba(255,153,0,0.5); padding: 22px 14px; display:flex; flex-direction:column; justify-content:center;"><div class="num">7</div><div class="lbl" style="font-size:15px;">Resultados finales</div><div style="font-size:11px; color:var(--accent); margin-top:8px;">Fin — Valor de negocio cuantificado →</div></div>
+        </div>
+      </div>
+
+      <!-- Tool box -->
+      <div style="background: var(--card); border: 1px solid var(--card-border); border-radius: 22px; padding: 32px 36px; display:flex; flex-direction:column; gap: 22px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap: 24px; flex-wrap: wrap;">
+          <h3 style="margin: 0; color: var(--ink); font-size: 32px; font-weight: 800; letter-spacing: -0.01em;">La herramienta</h3>
+          <img src="../../docs/images/kiro-wordmark.png" alt="Kiro" style="height: 44px; width:auto;" />
+        </div>
+
+        <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 22px; flex:1;">
+          <div style="display:flex; flex-direction:column; justify-content:center; padding: 8px 4px;">
+            <div style="font-size:18px; color:var(--accent); font-weight:800; letter-spacing:0.05em; text-transform:uppercase; margin-bottom:10px;">Proceso embebido</div>
+            <div style="font-size:18px; line-height:1.45; color:var(--ink);">Las etapas de BVIF viven dentro de Kiro como instrucciones escritas, para que el practicante simplemente las siga.</div>
+          </div>
+          <div style="display:flex; flex-direction:column; justify-content:center; padding: 8px 4px;">
+            <div style="font-size:18px; color:#7ec3ff; font-weight:800; letter-spacing:0.05em; text-transform:uppercase; margin-bottom:10px;">Entradas</div>
+            <div style="font-size:18px; line-height:1.45; color:var(--ink);">Guía al practicante — solicita información, hace preguntas.</div>
+          </div>
+          <div style="display:flex; flex-direction:column; justify-content:center; padding: 8px 4px;">
+            <div style="font-size:18px; color:#6be0a7; font-weight:800; letter-spacing:0.05em; text-transform:uppercase; margin-bottom:10px;">Salidas</div>
+            <div style="font-size:18px; line-height:1.45; color:var(--ink);">Produce cada artefacto — artefactos intermedios y el informe final.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- INTERNAL SLIDE 3: Why you are here, and what you will do -->
+  <section class="slide" data-notes="Ancla a la audiencia — unos 60 segundos. Por qué estás aquí: como Amazonians con experiencia y miembros del TFC de T&I, tu retroalimentación sobre la propuesta de valor y la ejecución de BVIF es el insumo que necesitamos para evolucionar el marco. Qué harás: ejecutar el proceso BVIF completo de principio a fin contra un escenario ficticio en un entorno controlado, y luego compartir retroalimentación y resultados. La experiencia práctica es la forma más rápida de formar una opinión defendible.">
+    <span class="eyebrow">La sesión de hoy</span>
+    <h2 class="headline">Por qué estás aquí, y qué harás</h2>
+
+    <div style="flex:1; display:grid; grid-template-columns: 1fr 1.4fr; gap: 24px; max-width: 1320px; width: 100%; margin: 18px auto 0;">
+
+      <!-- Why you are here -->
+      <div style="background: var(--card); border: 1px solid var(--card-border); border-radius: 22px; padding: 36px 40px; display:flex; flex-direction:column; gap: 22px;">
+        <div>
+          <h3 style="margin: 0 0 6px; color: var(--ink); font-size: 32px; font-weight: 800; letter-spacing: -0.01em;">Por qué estás aquí</h3>
+          <div style="font-size: 20px; color: var(--ink-dim);">Tu retroalimentación valida y mejora BVIF para los clientes.</div>
+        </div>
+
+        <div style="flex:1; display:flex; align-items:center;">
+          <p style="margin: 0; font-size: 28px; line-height: 1.45; color: var(--ink);">
+            Como Amazonians con experiencia y miembros del TFC de Transformation &amp; Innovation, valoramos tu mentalidad de negocio y queremos tu retroalimentación sobre la <span style="color: var(--accent); font-weight: 700;">propuesta de valor</span> y la <span style="color: var(--accent); font-weight: 700;">ejecución</span> de BVIF.
+          </p>
+        </div>
+      </div>
+
+      <!-- What you will do -->
+      <div style="background: var(--card); border: 1px solid var(--card-border); border-radius: 22px; padding: 36px 40px; display:flex; flex-direction:column; gap: 22px;">
+        <div>
+          <h3 style="margin: 0 0 0; color: var(--ink); font-size: 32px; font-weight: 800; letter-spacing: -0.01em;">Qué harás</h3>
+        </div>
+
+        <div style="flex:1; display:flex; flex-direction:column; gap: 22px; justify-content:center;">
+
+          <div style="display:grid; grid-template-columns: 64px 1fr; gap: 22px; align-items:center;">
+            <div style="width:56px; height:56px; border-radius:50%; background: linear-gradient(135deg, var(--accent), #ffd166); color:#111; font-weight:800; display:grid; place-items:center; font-size:24px;">1</div>
+            <div>
+              <div style="font-size:24px; font-weight:700; color:var(--ink);">Ejecuta el proceso BVIF completo</div>
+              <div style="font-size:18px; color:var(--ink-dim); margin-top:4px; line-height:1.4;">De principio a fin contra un escenario ficticio — vive el proceso de primera mano en un entorno controlado.</div>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns: 64px 1fr; gap: 22px; align-items:center;">
+            <div style="width:56px; height:56px; border-radius:50%; background: rgba(31,155,255,0.18); color:#7ec3ff; border:1px solid rgba(31,155,255,0.45); font-weight:800; display:grid; place-items:center; font-size:24px;">2</div>
+            <div>
+              <div style="font-size:24px; font-weight:700; color:var(--ink);">Brinda retroalimentación</div>
+              <div style="font-size:18px; color:var(--ink-dim); margin-top:4px; line-height:1.4;">Sobre la propuesta de valor, sobre la ejecución — qué funcionó, qué no, qué tan valioso es, cuándo es más valioso.</div>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns: 64px 1fr; gap: 22px; align-items:center;">
+            <div style="width:56px; height:56px; border-radius:50%; background: rgba(38,194,129,0.18); color:#6be0a7; border:1px solid rgba(38,194,129,0.45); font-weight:800; display:grid; place-items:center; font-size:24px;">3</div>
+            <div>
+              <div style="font-size:24px; font-weight:700; color:var(--ink);">Comparte resultados e ideas</div>
+              <div style="font-size:18px; color:var(--ink-dim); margin-top:4px; line-height:1.4;">Explica a la sala tus números, tus decisiones y tus aprendizajes.</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- INTERNAL SLIDE 4: Notes before starting -->
+  <section class="slide" data-notes="Establece expectativas antes del bloque práctico — unos 60 segundos. Cuatro cosas que señalar: (1) Los escenarios son ficticios — Manufactura (una sola iniciativa, evitación de costos, EE. UU., más complejo) o Club Deportivo (tres iniciativas, aumento de ingresos, Brasil, más simple — también permite comparar iniciativas). Elige el que se ajuste a su contexto. (2) BVIF es una versión en proceso — fomenta retroalimentación rica y pídeles etiquetar si cada comentario es sobre el proceso en sí o sobre la ejecución. (3) Sé lo más realista posible al responder a Kiro, pero espera que las salidas varíen entre participantes — eso es el marco funcionando como se diseñó. (4) Logística: canal de Slack para hoy, usa la opción de huddle para consultas 1:1.">
+    <span class="eyebrow">Antes de empezar</span>
+    <h2 class="headline">Notas antes de comenzar</h2>
+
+    <div style="flex:1; display:grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr 1fr; gap: 18px; max-width: 1320px; width: 100%; margin: 18px auto 0;">
+
+      <!-- Note 1: Fictitious scenarios -->
+      <div style="background: var(--card); border: 1px solid var(--card-border); border-radius: 22px; padding: 24px 30px; display:flex; flex-direction:column; gap: 12px; justify-content:center;">
+        <h3 style="margin: 0; color: var(--ink); font-size: 24px; font-weight: 800; letter-spacing: -0.01em;">Escenarios ficticios</h3>
+        <p style="margin: 0; font-size: 16px; color: var(--ink-dim); line-height: 1.4;">Un entorno controlado para el ejercicio. Elige uno de los dos:</p>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div style="border: 1px solid rgba(31,155,255,0.45); background: rgba(31,155,255,0.10); border-radius: 14px; padding: 12px 14px; display:flex; flex-direction:column; gap:4px;">
+            <div style="font-size: 12px; color: #7ec3ff; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;">Escenario A</div>
+            <div style="font-size: 17px; font-weight: 700; color: var(--ink);">Empresa de manufactura</div>
+            <div style="font-size: 13px; color: var(--ink-dim); line-height: 1.4;">Una sola iniciativa, técnicamente más rica (mantenimiento predictivo) — valor por evitación de costos, más métricas que interactúan.</div>
+          </div>
+          <div style="border: 1px solid rgba(38,194,129,0.45); background: rgba(38,194,129,0.10); border-radius: 14px; padding: 12px 14px; display:flex; flex-direction:column; gap:4px;">
+            <div style="font-size: 12px; color: #6be0a7; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;">Escenario B</div>
+            <div style="font-size: 17px; font-weight: 700; color: var(--ink);">Club deportivo</div>
+            <div style="font-size: 13px; color: var(--ink-dim); line-height: 1.4;">Tres iniciativas más ligeras — valor por aumento de ingresos; elige una o compara varias para simular priorización.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Note 2: Work in progress -->
+      <div style="background: var(--card); border: 1px solid var(--card-border); border-radius: 22px; padding: 24px 30px; display:flex; flex-direction:column; gap: 12px; justify-content:center;">
+        <h3 style="margin: 0; color: var(--ink); font-size: 24px; font-weight: 800; letter-spacing: -0.01em;">Esto es un trabajo en progreso</h3>
+        <p style="margin: 0; font-size: 18px; color: var(--ink); line-height: 1.45;">Brinda toda la retroalimentación posible — y por favor aclara si cada comentario es sobre el <span style="color: var(--accent); font-weight: 700;">proceso</span> o la <span style="color: var(--accent); font-weight: 700;">ejecución</span>.</p>
+      </div>
+
+      <!-- Note 3: Be realistic, expect variation -->
+      <div style="background: var(--card); border: 1px solid var(--card-border); border-radius: 22px; padding: 24px 30px; display:flex; flex-direction:column; gap: 12px; justify-content:center;">
+        <h3 style="margin: 0; color: var(--ink); font-size: 24px; font-weight: 800; letter-spacing: -0.01em;">Ejecútalo de la forma más realista posible</h3>
+        <p style="margin: 0; font-size: 18px; color: var(--ink); line-height: 1.45;">Responde a Kiro como lo haría un representante del cliente. Los resultados <em>variarán</em> entre participantes — eso es el marco funcionando como se diseñó.</p>
+      </div>
+
+      <!-- Note 4: Logistics / Slack -->
+      <div style="background: var(--card); border: 1px solid var(--card-border); border-radius: 22px; padding: 24px 30px; display:flex; flex-direction:column; gap: 12px; justify-content:center;">
+        <h3 style="margin: 0; color: var(--ink); font-size: 24px; font-weight: 800; letter-spacing: -0.01em;">Logística</h3>
+        <p style="margin: 0; font-size: 18px; color: var(--ink); line-height: 1.45;">Se ha creado un <span style="color: var(--accent); font-weight: 700;">canal de Slack</span> para la sesión de hoy. Usa la opción <span style="color: var(--accent); font-weight: 700;">huddle</span> para consultas 1:1.</p>
+      </div>
+
+      <!-- Note 5: Progress monitoring & feedback (full-width row) -->
+      <div style="grid-column: 1 / -1; background: var(--card); border: 1px solid var(--card-border); border-radius: 22px; padding: 24px 30px; display:flex; flex-direction:column; gap: 10px; justify-content:center;">
+        <h3 style="margin: 0; color: var(--ink); font-size: 24px; font-weight: 800; letter-spacing: -0.01em;">Monitoreo de progreso y retroalimentación</h3>
+        <p style="margin: 0; font-size: 18px; color: var(--ink); line-height: 1.45;">
+          Usa la <span style="color: var(--accent); font-weight: 700;">página paso a paso en el navegador</span> para seguir tu progreso y enviar retroalimentación en cada paso — el lenguaje natural está bien. En <span style="color: var(--accent); font-weight: 700;">Chrome / Edge / Arc</span> puedes dictar con el micrófono. Cuando la sesión termine, comparte tu archivo de retroalimentación generado con el facilitador.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- INTERNAL SLIDE 5: Transition — Step-by-step instructions -->
+  <section class="slide" data-notes="Diapositiva de transición rápida — unos 10 segundos. De aquí en adelante, la diapositiva es una vista navegable del README del taller. Diles a los participantes que pueden seguir aquí, o abrir el archivo README directamente — ambos contienen las mismas instrucciones.">
+    <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;">
+      <span class="chip">Ahora pasamos a lo práctico</span>
+      <h1 style="margin-top: 24px; font-size: 92px; line-height: 1.05;">Instrucciones<br/>paso a paso</h1>
+      <p style="margin-top: 28px; max-width: 880px; font-size: 22px; color: var(--ink-dim); line-height: 1.5;">
+        Un acompañante visual del <code style="font-size:18px; padding:2px 8px;">README.md</code> del taller (<a href="https://gitlab.aws.dev/maumunoz/kiro_for_bvif/-/blob/main/bvif-samples/0.workshop/README.md" target="_blank" style="color: var(--accent-2); text-decoration: none; border-bottom: 1px dashed var(--accent-2);">gitlab</a> | <a href="./README.md" target="_blank" style="color: var(--accent-2); text-decoration: none; border-bottom: 1px dashed var(--accent-2);">local</a>). Usa cualquiera de los dos: la presentación para navegación visual, el archivo para instrucciones en texto.
+      </p>
+    </div>
+  </section>
+
+  <!-- INTERNAL SLIDE 6: Interactive guide — README as a tree + content -->
+  <section class="slide" data-notes="Este es el acompañante navegable del README. Tres fases de nivel superior: Preparación, Ejecutar el proceso BVIF, Presentar resultados. Cada una tiene sus propios pasos. Haz clic en un paso del árbol para mostrar su contenido a la derecha; marca la casilla para darlo por hecho. Anima a los participantes a usar esta diapositiva como su referencia durante el bloque práctico — y a mantener el README abierto en paralelo para copiar y pegar comandos.">
+    <span class="eyebrow">El taller, paso a paso</span>
+    <h2 class="headline">Sigue los pasos — elige cualquiera para expandir</h2>
+    <p style="margin: 0 0 18px; font-size: 16px; color: var(--ink-dim);">Marca las casillas a medida que terminas cada paso para visualizar tu progreso.</p>
+
+    <div style="flex:1; display:grid; grid-template-columns: 320px 1fr 450px; gap: 20px; width: 100%; margin: 12px 0 0; min-height: 0;">
+
+      <!-- LEFT: tree -->
+      <div style="background: var(--card); border: 1px solid var(--card-border); border-radius: 18px; padding: 18px 8px 18px 18px; overflow-y: auto;">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding: 0 14px 8px;">
+          <span style="font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-dim); font-weight: 700;">Tu progreso</span>
+          <button class="tree-reset-btn" id="tree-reset">Reiniciar</button>
+        </div>
+        <div id="step-tree">
+          <!-- Phase 1 -->
+          <div style="font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); font-weight: 700; padding: 8px 14px 6px;">Fase 1 — Preparación</div>
+          <button class="tree-step active" data-step="1.1"><span class="step-check"></span><span class="step-label">1.1 Instala Kiro</span></button>
+          <button class="tree-step" data-step="1.2"><span class="step-check"></span><span class="step-label">1.2 Crea la carpeta de espacio de trabajo</span></button>
+          <button class="tree-step" data-step="1.3"><span class="step-check"></span><span class="step-label">1.3 Copia la carpeta <code>.kiro/</code></span></button>
+          <button class="tree-step" data-step="1.3a" style="margin-left: 18px; font-size: 13px;"><span class="step-check"></span><span class="step-label">↳ Opción A — Clonar con git</span></button>
+          <button class="tree-step" data-step="1.3b" style="margin-left: 18px; font-size: 13px;"><span class="step-check"></span><span class="step-label">↳ Opción B — Descargar un zip</span></button>
+          <button class="tree-step" data-step="1.4"><span class="step-check"></span><span class="step-label">1.4 Abre el espacio de trabajo en Kiro</span></button>
+
+          <!-- Phase 2 -->
+          <div style="font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #6be0a7; font-weight: 700; padding: 16px 14px 6px;">Fase 2 — Ejecutar el proceso BVIF</div>
+          <button class="tree-step" data-step="2.1"><span class="step-check"></span><span class="step-label">2.1 Elige un escenario</span></button>
+          <button class="tree-step" data-step="2.2"><span class="step-check"></span><span class="step-label">2.2 Lee el guion</span></button>
+          <button class="tree-step" data-step="2.3"><span class="step-check"></span><span class="step-label">2.3 Inicia una nueva sesión en Kiro</span></button>
+          <button class="tree-step" data-step="2.4"><span class="step-check"></span><span class="step-label">2.4 Sigue las indicaciones</span></button>
+          <button class="tree-step" data-step="2.4a" style="margin-left: 18px; font-size: 13px;"><span class="step-check"></span><span class="step-label">↳ Monitorea el progreso</span></button>
+          <button class="tree-step" data-step="2.4b" style="margin-left: 18px; font-size: 13px;"><span class="step-check"></span><span class="step-label">↳ Nota sobre la Etapa 5 (Recolección de datos)</span></button>
+
+          <!-- Phase 3 -->
+          <div style="font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #7ec3ff; font-weight: 700; padding: 16px 14px 6px;">Fase 3 — Presentar resultados</div>
+          <button class="tree-step" data-step="3.1"><span class="step-check"></span><span class="step-label">3.1 Recorre tu entregable</span></button>
+          <button class="tree-step" data-step="3.2"><span class="step-check"></span><span class="step-label">3.2 Comparte tus 2 principales comentarios</span></button>
+          <button class="tree-step" data-step="3.3"><span class="step-check"></span><span class="step-label">3.3 Selección de presentador — La Rueda</span></button>
+
+          <!-- Final feedback (standalone section) -->
+          <div style="font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #ffc778; font-weight: 700; padding: 16px 14px 6px;">Retroalimentación final</div>
+          <button class="tree-step" data-step="4.1"><span class="step-check"></span><span class="step-label">4.1 Encuesta de cierre</span></button>
+          <button class="tree-step" data-step="4.2"><span class="step-check"></span><span class="step-label">4.2 Comparte tu archivo de retroalimentación</span></button>
+        </div>
+      </div>
+
+      <!-- RIGHT: content panels -->
+      <div style="background: var(--card); border: 1px solid var(--card-border); border-radius: 18px; padding: 28px 32px; overflow-y: auto;">
+
+        <!-- 1.1 -->
+        <div class="step-panel active" data-step="1.1">
+          <h3>1.1 Instala Kiro</h3>
+          <p class="step-lede">Instala el IDE de Kiro en tu máquina local antes de que comience la sesión.</p>
+          <ul>
+            <li>Ve a <a href="https://kiro.dev/" target="_blank">https://kiro.dev/</a> y sigue las instrucciones de instalación para tu sistema operativo.</li>
+            <li>Kiro es la única herramienta requerida. <code>git</code> y el acceso SSH a <code>gitlab.aws.dev</code> son opcionales — solo se necesitan para la Opción A en el paso 1.3.</li>
+          </ul>
+        </div>
+
+        <!-- 1.2 -->
+        <div class="step-panel" data-step="1.2">
+          <h3>1.2 Crea una carpeta de espacio de trabajo vacía</h3>
+          <p class="step-lede">Crea una carpeta vacía en cualquier lugar de tu máquina local donde tengas permiso de escritura. Kiro la usará como directorio base de todos los artefactos BVIF.</p>
+          <div class="code-block"><button class="copy-btn" type="button">Copiar</button><pre>mkdir -p ~/workspace-bvif</pre></div>
+          <div class="step-note">La ruta no importa — donde puedas escribir. Ejemplo: <code>~/workspace-bvif/</code>.</div>
+        </div>
+
+        <!-- 1.3 -->
+        <div class="step-panel" data-step="1.3">
+          <h3>1.3 Copia los archivos del proyecto en tu espacio de trabajo</h3>
+          <p class="step-lede">Incluye <code>.kiro/</code>, <code>bvif-samples/</code>, <code>docs/</code> y <code>README.md</code> — las reglas de steering, los escenarios resueltos, las capturas de apoyo y el README del proyecto. Elige la opción que se ajuste a tu entorno:</p>
+          <div class="step-option-grid">
+            <button class="step-option tree-jump" data-jump="1.3a" type="button" style="text-align:left; cursor:pointer; font:inherit; color:inherit;">
+              <div class="lbl">Opción A →</div>
+              <div class="ttl">Clonar con git</div>
+              <div style="font-size: 14px; color: var(--ink-dim); line-height: 1.5;">Recomendada si ya tienes SSH configurado hacia <code>gitlab.aws.dev</code>.</div>
+            </button>
+            <button class="step-option tree-jump" data-jump="1.3b" type="button" style="text-align:left; cursor:pointer; font:inherit; color:inherit;">
+              <div class="lbl">Opción B →</div>
+              <div class="ttl">Descargar un zip</div>
+              <div style="font-size: 14px; color: var(--ink-dim); line-height: 1.5;">Usa esta si no tienes acceso SSH — funciona solo desde el navegador.</div>
+            </button>
+          </div>
+          <p class="step-lede" style="font-size: 16px;">Después de cualquiera de las opciones, tu espacio de trabajo debería verse así:</p>
+          <div class="code-block"><button class="copy-btn" type="button">Copiar</button><pre>~/workspace-bvif/
+├── .kiro/
+│   ├── steering/
+│   └── bvif-rule-details/
+├── bvif-samples/
+│   ├── 0.workshop/
+│   ├── 1.bvif-scenarios/
+│   └── 2.bvif-docs/
+├── docs/
+└── README.md</pre></div>
+        </div>
+
+        <!-- 1.3a -->
+        <div class="step-panel" data-step="1.3a">
+          <h3>1.3 · Opción A — Clonar con git</h3>
+          <p class="step-lede">En una terminal, navega a tu carpeta de espacio de trabajo y ejecuta:</p>
+          <div class="code-block"><button class="copy-btn" type="button">Copiar</button><pre>cd ~/workspace-bvif
+git clone git@ssh.gitlab.aws.dev:maumunoz/kiro_for_bvif.git /tmp/kiro_for_bvif
+cp -R /tmp/kiro_for_bvif/.kiro /tmp/kiro_for_bvif/bvif-samples /tmp/kiro_for_bvif/docs /tmp/kiro_for_bvif/README.md .
+rm -rf /tmp/kiro_for_bvif</pre></div>
+          <div class="step-note">Copia <code>.kiro/</code>, <code>bvif-samples/</code>, <code>docs/</code> y <code>README.md</code> en tu espacio de trabajo. El <code>rm</code> final es solo limpieza.</div>
+        </div>
+
+        <!-- 1.3b -->
+        <div class="step-panel" data-step="1.3b">
+          <h3>1.3 · Opción B — Descargar el archivo fuente</h3>
+          <p class="step-lede">Abre la página del proyecto en GitLab, haz clic en <strong>Code</strong> y elige <strong>Download source code → zip</strong>.</p>
+          <ul>
+            <li>Página del proyecto: <a href="https://gitlab.aws.dev/maumunoz/kiro_for_bvif" target="_blank">gitlab.aws.dev/maumunoz/kiro_for_bvif</a></li>
+            <li>Descomprime el archivo.</li>
+            <li>Copia <code>.kiro/</code>, <code>bvif-samples/</code>, <code>docs/</code> y <code>README.md</code> del contenido extraído a tu carpeta de espacio de trabajo.</li>
+          </ul>
+          <img class="step-image" src="../../docs/images/gitlab-download-files.png" alt="Menú Code de GitLab mostrando Download source code → zip" />
+        </div>
+
+        <!-- 1.4 -->
+        <div class="step-panel" data-step="1.4">
+          <h3>1.4 Abre el espacio de trabajo en Kiro</h3>
+          <p class="step-lede">En Kiro: <strong>File → Open Folder…</strong> y selecciona la raíz del espacio de trabajo.</p>
+          <p class="step-lede" style="font-size: 16px;">Verifica que la regla de steering se cargó:</p>
+          <ul>
+            <li>Haz clic en el <strong>icono de Kiro</strong> en la barra de actividad.</li>
+            <li>Expande <strong>Agent steering &amp; skills</strong>.</li>
+            <li>Bajo <strong>Workspace</strong>, deberías ver <strong>core-workflow</strong>.</li>
+          </ul>
+          <img class="step-image" src="../../docs/images/kiro-steering-doc.png" alt="Panel de Kiro mostrando la entrada core-workflow bajo Agent steering & skills → Workspace" style="max-width: 25%;" />
+        </div>
+
+        <!-- 2.1 -->
+        <div class="step-panel" data-step="2.1">
+          <h3>2.1 Elige un escenario</h3>
+          <p class="step-lede">Explora los escenarios ficticios disponibles y elige uno.</p>
+          <ul>
+            <li><strong>Carpeta de escenarios</strong> (<a href="https://gitlab.aws.dev/maumunoz/kiro_for_bvif/-/tree/main/bvif-samples/1.bvif-scenarios" target="_blank">gitlab</a> | <a href="../1.bvif-scenarios/" target="_blank">local</a>)</li>
+            <li><strong>Resumen de escenarios</strong> — comparación Manufactura vs. Club deportivo (<a href="https://gitlab.aws.dev/maumunoz/kiro_for_bvif/-/blob/main/bvif-samples/1.bvif-scenarios/README.md" target="_blank">gitlab</a> | <a href="../1.bvif-scenarios/README.md" target="_blank">local</a>)</li>
+          </ul>
+          <div class="step-note">Manufactura = una sola iniciativa, técnicamente más rica (evitación de costos). Club deportivo = tres iniciativas más ligeras (aumento de ingresos) — elige una o compara varias.</div>
+        </div>
+
+        <!-- 2.2 -->
+        <div class="step-panel" data-step="2.2">
+          <h3>2.2 Lee el guion</h3>
+          <p class="step-lede">Abre el archivo del guion dentro de la carpeta del escenario que elegiste y léelo por encima.</p>
+          <ul>
+            <li>Familiarízate con el cliente, el contexto y la iniciativa de IA propuesta.</li>
+            <li>Interpretarás el papel de un representante del cliente al responder las preguntas de Kiro.</li>
+          </ul>
+          <div class="step-note">
+            <strong>Cómo abrirlo:</strong> para archivos <code>.md</code>, abre el archivo en Kiro y usa su vista previa de markdown integrada (<code>Cmd+K V</code> / <code>Ctrl+K V</code> para vista dividida, o <code>Cmd+Shift+V</code> / <code>Ctrl+Shift+V</code> para vista completa) para leerlo con formato. Para otros formatos, usa el lector nativo correspondiente — Word para <code>.docx</code>, un visor de PDF para <code>.pdf</code>, cualquier editor de texto para <code>.txt</code>.
+          </div>
+        </div>
+
+        <!-- 2.3 -->
+        <div class="step-panel" data-step="2.3">
+          <h3>2.3 Inicia una nueva sesión en Kiro</h3>
+          <p class="step-lede">Con el espacio de trabajo abierto, abre una nueva sesión de chat y cambia a <strong>Vibe mode</strong>. Escribe:</p>
+          <div class="code-block"><button class="copy-btn" type="button">Copiar</button><pre>Run a business value identification for &lt;título de tu iniciativa de IA&gt;.</pre></div>
+          <p class="step-lede" style="font-size: 16px;">Por ejemplo: <em>Run a business value identification for the initiative: predictive maintenance using AI.</em></p>
+          <img class="step-image" src="../../docs/images/kiro-vibe-mode.png" alt="IDE de Kiro mostrando una nueva sesión en Vibe mode" />
+          <div class="step-note">Este prompt solo arranca el proceso y nombra la iniciativa. Kiro solicitará el resto de los detalles en las etapas siguientes.</div>
+        </div>
+
+        <!-- 2.4 -->
+        <div class="step-panel" data-step="2.4">
+          <h3>2.4 Sigue las indicaciones en Kiro</h3>
+          <p class="step-lede">El agente recorre las 7 etapas de BVIF, deteniéndose para tu aprobación entre cada una. Responde usando el guion como tu fuente de verdad.</p>
+          <ul>
+            <li>Cada interacción escribe artefactos en <code>bvif-docs/&lt;NN&gt;-&lt;slug&gt;-&lt;yyyymm&gt;/</code> en la raíz del espacio de trabajo.</li>
+            <li>Puedes cerrar y reabrir el espacio de trabajo en cualquier momento — el agente retoma donde se quedó.</li>
+          </ul>
+          <div class="step-note"><strong>Listo cuando:</strong> todas las subcarpetas de etapa desde <code>00-session-setup/</code> hasta <code>07-final-results/</code> están pobladas y se ha generado <code>07-final-results/final-results.md</code>.</div>
+        </div>
+
+        <!-- 2.4a -->
+        <div class="step-panel" data-step="2.4a">
+          <h3>2.4 · Monitorea el progreso</h3>
+          <p class="step-lede">Dos archivos dentro de la carpeta de tu iniciativa lo registran todo:</p>
+          <ul>
+            <li><code>bvif-state.md</code> — qué etapas están completas.</li>
+            <li><code>audit.md</code> — registro completo de cada interacción con el agente.</li>
+          </ul>
+          <div class="step-note">Ábrelos en un panel lateral en Kiro mientras trabajas — se actualizan en vivo.</div>
+
+          <div class="state-monitor" data-state-monitor>
+            <div class="sm-row">
+              <label>Nombre de la iniciativa BVIF
+                <select data-monitor-initiative>
+                  <option value="">— elige una iniciativa —</option>
+                </select>
+              </label>
+              <button type="button" class="sm-refresh" data-monitor-refresh>↻ Actualizar</button>
+            </div>
+            <ul class="stage-list" data-monitor-stages>
+              <li class="sm-empty">Elige la carpeta del espacio de trabajo (botón en la parte superior del formulario de retroalimentación), luego elige una iniciativa para ver su estado actual.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 2.4b -->
+        <div class="step-panel" data-step="2.4b">
+          <h3>2.4 · Nota sobre la Etapa 5 (Recolección de datos)</h3>
+          <p class="step-lede">Esta es la única etapa donde Kiro puede pedirte compartir archivos. Dos opciones — se pueden combinar.</p>
+          <div class="step-option-grid">
+            <div class="step-option">
+              <div class="lbl">Opción 1</div>
+              <div class="ttl">Responder en línea</div>
+              <div style="font-size: 14px; color: var(--ink-dim); line-height: 1.5;">Kiro crea un archivo de preguntas con una entrada por cada dato.</div>
+            </div>
+            <div class="step-option">
+              <div class="lbl">Opción 2</div>
+              <div class="ttl">Subir documentos</div>
+              <div style="font-size: 14px; color: var(--ink-dim); line-height: 1.5;">Kiro crea <code>05-data-collection/uploads/</code>, lee los archivos que coloques ahí y extrae datos con una etiqueta de <strong>fidelidad de la fuente</strong> (Alta / Media / Baja).</div>
+            </div>
+          </div>
+          <div class="step-note">Solo texto plano o markdown. Mantén binarios (PDFs, hojas de cálculo, imágenes) y cualquier cosa con secretos fuera de <code>uploads/</code> — transcribe primero los números relevantes.</div>
+        </div>
+
+        <!-- 3.1 -->
+        <div class="step-panel" data-step="3.1">
+          <h3>3.1 Recorre tu entregable final de BVIF</h3>
+          <p class="step-lede">En tu franja de tiempo asignada (normalmente 5 minutos por participante), explica a la sala:</p>
+          <ul>
+            <li>La definición de la iniciativa.</li>
+            <li>Las métricas que seleccionaste.</li>
+            <li>Las decisiones de factibilidad que tomaste.</li>
+            <li>Los datos que recolectaste.</li>
+            <li>El valor de negocio anualizado final.</li>
+          </ul>
+        </div>
+
+        <!-- 3.2 -->
+        <div class="step-panel" data-step="3.2">
+          <h3>3.2 Comparte tus 2 principales comentarios</h3>
+          <p class="step-lede">Del ejercicio — qué funcionó bien, qué resultó confuso, qué cambiarías.</p>
+          <div class="step-note">Este es el aporte de aprendizaje más valioso que el facilitador y los demás participantes pueden recibir. Etiqueta cada comentario como <strong>proceso</strong> o <strong>ejecución</strong>.</div>
+        </div>
+
+        <!-- 3.3 -->
+        <div class="step-panel" data-step="3.3">
+          <h3>3.3 Selección de presentador — "La Rueda"</h3>
+          <p class="step-lede">Los presentadores se eligen al azar usando <a href="https://github.com/aws/aws-ops-wheel" target="_blank">The Wheel</a>. El facilitador agrega el nombre de cada participante a la rueda y la gira.</p>
+          <img class="step-image" src="../../docs/images/aws-ops-wheel.png" alt="La Rueda — selección aleatoria de participantes" style="max-width: 480px;" />
+          <div class="step-note">Las diferencias entre presentaciones no son errores — muestran cómo un mismo guion puede producir legítimamente resultados distintos según las decisiones de criterio tomadas en el camino.</div>
+        </div>
+
+        <!-- 4.1 Final feedback survey -->
+        <div class="step-panel" data-step="4.1">
+          <h3>Retroalimentación final — encuesta de cierre</h3>
+          <p class="step-lede">Unas pocas calificaciones rápidas + una pregunta abierta para cerrar la sesión. Los envíos quedan en el mismo archivo de retroalimentación que las entradas por paso, etiquetados con la fase <code>Final feedback</code>.</p>
+
+          <form class="final-survey" id="final-survey-form">
+            <div class="form-row">
+              <label>Alias <input type="text" name="alias" required /></label>
+              <label>Fecha <input type="text" name="date" required /></label>
+            </div>
+
+            <fieldset>
+              <legend>P1. ¿Cómo calificarías el <strong>proceso</strong> BVIF?</legend>
+              <div class="rating-help">¿El marco en sí — sus fases, etapas y enfoque — es sólido?</div>
+              <div class="rating" data-rating="processScore"></div>
+            </fieldset>
+
+            <fieldset>
+              <legend>P2. ¿Cómo calificarías la <strong>ejecución</strong> de BVIF?</legend>
+              <div class="rating-help">¿Qué tan bien te guiaron el agente y las herramientas a través del proceso hoy?</div>
+              <div class="rating" data-rating="executionScore"></div>
+            </fieldset>
+
+            <fieldset>
+              <legend>P3. ¿Qué tan valioso es agregar un paso de BVIF en la fase de <strong>prototipado</strong>?</legend>
+              <div class="rating-help">Cuando un cliente está explorando o construyendo un prototipo, ¿ejecutar BVIF vale la pena?</div>
+              <div class="rating" data-rating="prototypingValueScore"></div>
+            </fieldset>
+
+            <fieldset>
+              <legend>P4. ¿Qué tan probable es que <strong>recomiendes BVIF</strong> para tu cliente más importante?</legend>
+              <div class="rating-help">Ahora mismo, con lo que has visto hoy.</div>
+              <div class="rating" data-rating="recommendScore"></div>
+            </fieldset>
+
+            <label>
+              <span style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+                <span>P5. ¿Algo más que valga la pena compartir?</span>
+                <button type="button" class="mic-btn" data-mic data-mic-target="comments" title="Dictar (iniciar/detener)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="9" y="2" width="6" height="12" rx="3"></rect>
+                    <path d="M5 11a7 7 0 0 0 14 0"></path>
+                    <line x1="12" y1="18" x2="12" y2="22"></line>
+                    <line x1="8"  y1="22" x2="16" y2="22"></line>
+                  </svg>
+                </button>
+              </span>
+              <textarea name="comments" placeholder="Retroalimentación abierta — proceso, ejecución, ajuste al prototipado, ajuste al cliente, ideas, bloqueos, sorpresas…  (Haz clic en el micrófono para dictar.)"></textarea>
+            </label>
+
+            <div class="form-actions">
+              <button type="submit">Enviar retroalimentación final</button>
+            </div>
+            <div class="form-status" data-form-status>Elige la carpeta del espacio de trabajo una vez (parte superior de cualquier formulario de retroalimentación por paso). La encuesta se agrega a <code>feedback-&lt;alias&gt;.json</code> con la fase <code>Final feedback</code>.</div>
+          </form>
+        </div>
+
+        <!-- 4.2 Share the feedback file -->
+        <div class="step-panel" data-step="4.2">
+          <h3>4.2 Comparte tu archivo de retroalimentación con el facilitador</h3>
+          <p class="step-lede">Todos tus envíos durante el taller quedaron en un único archivo JSON. Envíalo al facilitador antes de desconectarte.</p>
+          <ul>
+            <li>Abre tu carpeta de espacio de trabajo y navega a <code>bvif-samples/0.workshop/feedback/</code>.</li>
+            <li>Deberías ver <code>feedback-&lt;alias&gt;.json</code> — y posiblemente archivos adicionales <code>feedback-&lt;alias&gt;-&lt;date&gt;.json</code> si tu navegador recurrió a las descargas.</li>
+            <li>Coloca el archivo (o archivos) en el canal de Slack del taller — escribe por DM al facilitador si prefieres no compartirlo públicamente.</li>
+          </ul>
+          <div class="step-note">Si la carpeta está vacía o falta el archivo, el espacio de trabajo nunca se conectó. Abre cualquier formulario de retroalimentación por paso y haz clic en <strong>Elegir carpeta del espacio de trabajo</strong>, luego reenvía una entrada de prueba rápida para confirmar la ruta.</div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT: feedback form (its own box) -->
+      <div style="background: var(--card); border: 1px solid var(--card-border); border-radius: 18px; padding: 22px 22px; overflow-y: auto;">
+        <form class="feedback-form" id="slide-feedback-form" style="background: transparent; border: none; padding: 0;">
+          <h4>Comparte retroalimentación sobre este paso</h4>
+          <p class="form-sub">¿Atascado, sorprendido o con una sugerencia? Déjala aquí — se agrega a tu archivo de retroalimentación a medida que avanzas.</p>
+
+          <div class="workspace-cta" data-workspace-cta>
+            <span class="cta-label">Paso 1 — conecta tu espacio de trabajo</span>
+            <button type="button" class="pick-btn" data-pick-folder>📂  Elegir carpeta del espacio de trabajo</button>
+            <p class="cta-note">Para la mejor experiencia — escritura directa de archivos, dictado por micrófono y menús desplegables conscientes de la carpeta — usa un navegador basado en Chromium (Chrome, Edge o Arc). Otros navegadores recurren a descargas JSON y dictado deshabilitado.</p>
+          </div>
+
+          <label>Alias <input type="text" name="alias" required /></label>
+          <label>Fase <input type="text" name="phase" required /></label>
+          <label>Paso <input type="text" name="step" required /></label>
+          <div data-bvif-fields style="display:none; flex-direction:column; gap:12px;">
+            <label>Nombre de la iniciativa BVIF
+              <select name="bvifInitiative">
+                <option value="">— elige una iniciativa —</option>
+              </select>
+              <button type="button" class="pick-btn" data-refresh-initiatives style="margin-top:6px; align-self:flex-start;">↻ Actualizar lista</button>
+            </label>
+            <label>Etapa BVIF
+              <select name="bvifStage">
+                <option value="">— elige una etapa —</option>
+                <option value="Session Setup">Configuración de la sesión</option>
+                <option value="Stage 1 — Refine the Initiative Definition">Etapa 1 — Refinar la definición de la iniciativa</option>
+                <option value="Stage 2 — Business Value Mapping">Etapa 2 — Mapeo de valor de negocio</option>
+                <option value="Stage 3 — Metrics Identification &amp; Feasibility">Etapa 3 — Identificación de métricas y factibilidad</option>
+                <option value="Stage 4 — Metrics Adjustment">Etapa 4 — Ajuste de métricas</option>
+                <option value="Stage 5 — Data Collection">Etapa 5 — Recolección de datos</option>
+                <option value="Stage 6 — Business Value Calculation">Etapa 6 — Cálculo del valor de negocio</option>
+                <option value="Stage 7 — Final Results Documentation">Etapa 7 — Documentación de resultados finales</option>
+                <option value="COMPLETE">COMPLETO</option>
+              </select>
+            </label>
+          </div>
+          <label>Fecha <input type="text" name="date" required /></label>
+          <label>
+            <span style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+              <span>Retroalimentación</span>
+              <button type="button" class="mic-btn" data-mic title="Dictar (iniciar/detener)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="9" y="2" width="6" height="12" rx="3"></rect>
+                  <path d="M5 11a7 7 0 0 0 14 0"></path>
+                  <line x1="12" y1="18" x2="12" y2="22"></line>
+                  <line x1="8"  y1="22" x2="16" y2="22"></line>
+                </svg>
+              </button>
+            </span>
+            <textarea name="feedback" placeholder="¿Qué funcionó? ¿Qué no? ¿Proceso o ejecución?  (Haz clic en el micrófono para dictar.)" required></textarea>
+          </label>
+          <div class="form-actions">
+            <button type="submit">Enviar</button>
+          </div>
+          <div class="form-status" data-form-status>La retroalimentación se escribe en <code>bvif-samples/0.workshop/feedback/feedback-&lt;alias&gt;.json</code>; los menús de BVIF leen de <code>bvif-docs/</code>.</div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /deck-internal -->
+
+<div class="deck" id="deck">
+
+<!-- SLIDE 1: Title -->
+<section class="slide active" data-notes="Bienvenido/a al taller BVIF. Hoy aprenderás a convertir una iniciativa de IA en una evaluación cuantificada de valor de negocio. Mantén esto breve — alrededor de 1 minuto. Presiona N para abrir las notas del presentador, las flechas para navegar, F para pantalla completa.">
+  <div class="title-hero">
+    <span class="chip">AWS · AI Business Value Identification Framework</span>
+    <h1 style="margin-top:18px;">Taller<br/>BVIF</h1>
+    <p class="sub">De una idea de IA en lenguaje sencillo a un caso de negocio cuantificado y basado en evidencia — en siete pasos.</p>
+    <div style="margin-top:40px; display:flex; gap:12px; align-items:center; color: var(--ink-dim); font-size:14px;">
+      <span>Usa</span>
+      <span class="pill">→</span><span>Siguiente</span>
+      <span class="pill">←</span><span>Anterior</span>
+      <span class="pill">N</span><span>Notas del presentador</span>
+      <span class="pill">F</span><span>Pantalla completa</span>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 2: Meet the personas -->
+<section class="slide" data-notes="Conoce a Precision Furniture Inc. — un fabricante de muebles B2B con tres plantas de producción en EE. UU. (Ohio, Carolina del Norte, Texas), 450 empleados, ~$180M de ingresos y 85% de producción automatizada. Nos centramos en dos ejecutivos que impulsan esta iniciativa: Bob Hartman (CEO) — 20 años en manufactura B2B, MBA, se unió en 2018. Define la estrategia, decide la asignación de capital sobre $500K y hace una pregunta clave: '¿Esto nos hará más confiables para nuestros clientes, y el retorno justifica el riesgo?' Maria Delgado (COO) — 15 años en operaciones de manufactura, ingeniera mecánica, Lean Six Sigma Black Belt. Dirige las tres plantas, es responsable del tiempo de actividad y la entrega a tiempo, y es la patrocinadora principal de la iniciativa de mantenimiento predictivo. Enmarca el resto de la charla en torno a ellos: Bob necesita una historia de ROI creíble, Maria necesita que el caso operativo se sostenga.">
+  <div class="company-banner">
+    <span class="dot"></span>
+    <div style="flex:1">
+      <div style="font-weight:700; letter-spacing:0.04em;">Precision Furniture Inc.</div>
+      <div class="muted" style="font-size:14px;">Fabricante de muebles B2B · 3 plantas en EE. UU. · 450 empleados · ~$180M de ingresos · 85% automatizado</div>
+    </div>
+    <span class="pill">Conoce al equipo</span>
+  </div>
+
+  <div class="personas">
+    <div class="persona">
+      <div class="avatar">
+        <!-- Bob icon -->
+        <svg width="110" height="110" viewBox="0 0 110 110" aria-hidden="true">
+          <circle cx="55" cy="42" r="22" fill="#ffd166"/>
+          <path d="M20 95 C 20 70, 90 70, 90 95 Z" fill="#1f9bff"/>
+          <rect x="40" y="60" width="30" height="10" fill="#0b1e3f"/>
+        </svg>
+      </div>
+      <h2>Bob Hartman</h2>
+      <div class="role">Director Ejecutivo (CEO)</div>
+      <p class="tag">Dirección estratégica · Asignación de capital · Consejo y cuentas principales. “¿Esto nos hará más confiables, y el retorno justifica el riesgo?”</p>
+    </div>
+
+    <div class="persona">
+      <div class="avatar">
+        <!-- Maria icon -->
+        <svg width="110" height="110" viewBox="0 0 110 110" aria-hidden="true">
+          <circle cx="55" cy="42" r="22" fill="#ff9f7a"/>
+          <path d="M18 95 C 18 70, 92 70, 92 95 Z" fill="#ff9900"/>
+          <path d="M38 38 Q 55 18, 72 38" stroke="#3a1a00" stroke-width="6" fill="none"/>
+        </svg>
+      </div>
+      <h2>Maria Delgado</h2>
+      <div class="role">Directora de Operaciones (COO)</div>
+      <p class="tag">Dirige 3 plantas · Responsable del tiempo de actividad y la entrega a tiempo · Patrocinadora de la iniciativa de mantenimiento predictivo. Construyendo el caso de negocio para 2026.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 3: Results -->
+<section class="slide" data-notes="Esto es lo que BVIF produjo para Precision Furniture. La iniciativa comenzó como una idea en lenguaje sencillo — mantenimiento predictivo usando machine learning sobre datos de sensores — y BVIF la convirtió en $9.36M de valor de negocio anual cuantificado. Desglose: (1) Capacidad de producción recuperada — $6.46M/año al reducir a la mitad el tiempo de inactividad no planificado (2.8% → 1.4%), recuperando 162 horas por trimestre a $9,971 de margen de contribución perdido por hora. (2) Reducción de costo de mantenimiento — $1.73M/año por una reducción del 20% en el costo de mantenimiento por unidad ($12.00 → $9.60) en 720,000 unidades anuales. (3) Evitación de penalizaciones por entrega — $1.17M/año por una mejora de 5 puntos en la entrega a tiempo (90% → 95%), eliminando 117 pedidos tardíos por trimestre a $2,500 por penalización. Cada cifra es conservadora y validada contra casos de estudio de pares y benchmarks de la industria. Más allá de los dólares, la iniciativa protege las relaciones con los clientes, defiende la posición en el mercado medio y mejora la resiliencia operativa. Enfatiza: este nivel de rigor surgió de un taller estructurado con el agente, anclado solo en el contexto de negocio que el equipo proporcionó.">
+  <span class="eyebrow">Resultado · BVIF aplicado a Precision Furniture</span>
+  <h2 class="headline">$9.36M de valor de negocio anual cuantificado</h2>
+
+  <div class="row" style="flex:1; align-items:stretch;">
+    <div class="col" style="flex: 1;">
+      <div class="card" style="height:100%;">
+        <span class="pill">Inicio — La idea</span>
+        <div class="quote-card" style="margin-top:18px;">
+          Implementar un sistema de mantenimiento predictivo impulsado por machine learning que analice los datos de los sensores de los equipos de nuestras líneas automatizadas — prediciendo fallas antes de que ocurran y optimizando el mantenimiento en nuestras tres plantas.
+        </div>
+        <ul class="bullets" style="margin-top:14px;">
+          <li>Solo contexto de negocio — sin detalle técnico</li>
+          <li>Objetivos conservadores, validados con pares</li>
+          <li>Trazable de principio a fin</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="col" style="flex: 1.2;">
+      <div class="card" style="height:100%; display:flex; flex-direction:column;">
+        <span class="pill">Fin — Valor de negocio cuantificado</span>
+        <div style="display:flex; align-items:baseline; gap:16px; margin-top:14px;">
+          <span class="big-value">$9.36M</span>
+          <span class="muted">/año</span>
+        </div>
+        <div class="value-strip">
+          <div class="mini">
+            <div class="lbl">Capacidad recuperada</div>
+            <div class="val">$6.46M</div>
+          </div>
+          <div class="mini">
+            <div class="lbl">Costo de mantenimiento ↓</div>
+            <div class="val">$1.73M</div>
+          </div>
+          <div class="mini">
+            <div class="lbl">Evitación de penalizaciones</div>
+            <div class="val">$1.17M</div>
+          </div>
+        </div>
+
+        <div style="margin-top:22px;">
+          <!-- Simple bar chart SVG -->
+          <svg viewBox="0 0 600 160" class="diagram" aria-hidden="true">
+            <defs>
+              <linearGradient id="g1" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stop-color="#ffd166"/><stop offset="100%" stop-color="#ff9900"/>
+              </linearGradient>
+            </defs>
+            <g font-family="inherit" font-size="11" fill="#c6d1e3">
+              <text x="0" y="150">Capacidad</text>
+              <text x="210" y="150">Mantenimiento</text>
+              <text x="410" y="150">Penalizaciones</text>
+            </g>
+            <rect x="0"   y="20"  width="160" height="115" rx="6" fill="url(#g1)"/>
+            <rect x="210" y="88"  width="160" height="47"  rx="6" fill="url(#g1)" opacity="0.85"/>
+            <rect x="410" y="104" width="160" height="31"  rx="6" fill="url(#g1)" opacity="0.7"/>
+            <g font-family="inherit" font-size="13" fill="#0b1e3f" font-weight="700">
+              <text x="80"  y="80"  text-anchor="middle">$6.46M</text>
+              <text x="290" y="118" text-anchor="middle">$1.73M</text>
+              <text x="490" y="128" text-anchor="middle">$1.17M</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 4: What is BVIF? -->
+<section class="slide" data-notes="Ahora que has visto lo que BVIF puede hacer, expliquemos qué es. BVIF es un marco sistemático para convertir una iniciativa de IA en una evaluación cuantificada de valor de negocio. Partiendo de una descripción en lenguaje sencillo de la iniciativa, te guía — a través de un agente — para definir las métricas correctas, evaluar qué tan factible es medir cada una, recolectar datos y calcular un valor de negocio anualizado que esté anclado en evidencia y sea trazable de principio a fin. Se organiza en tres fases y siete etapas. Descubrimiento (azul): las etapas 1–2 definen la iniciativa y la mapean a categorías de valor de negocio. Métricas (verde): las etapas 3–4 identifican métricas candidatas, evalúan la factibilidad (F1/F2/F3) y ajustan según la disponibilidad de datos. Cuantificación (naranja): las etapas 5–7 recolectan datos, calculan el valor anualizado y producen el documento de resultados finales. Cada etapa termina con una compuerta de aprobación — el agente nunca avanza sin tu OK explícito — y cada interacción y respuesta del usuario se captura en archivos numerados secuencialmente, para que nada se pierda.">
+  <span class="eyebrow">¿Qué es BVIF?</span>
+  <h2 class="headline">De una idea de IA en lenguaje sencillo a valor cuantificado</h2>
+
+  <p style="max-width:1100px; font-size:18px; color:var(--ink); margin-bottom: 18px;">
+    Un marco sistemático que te guía para definir métricas, evaluar factibilidad,
+    recolectar datos y calcular el valor anualizado — <span style="color:var(--accent); font-weight:700;">anclado en evidencia, trazable de principio a fin.</span>
+  </p>
+
+  <div class="phase-band">
+    <div class="phase discover">🔵  Descubrimiento</div>
+    <div class="phase metrics">🟢  Métricas</div>
+    <div class="phase quant">🟡  Cuantificación</div>
+  </div>
+
+  <div class="steps">
+    <div class="step" style="border-color: rgba(31,155,255,0.5);"><div class="num">1</div><div class="lbl">Define la iniciativa</div><div style="font-size:11px; color:var(--accent); margin-top:6px;">← Inicio — La idea</div></div>
+    <div class="step"><div class="num">2</div><div class="lbl">Extrae categorías de valor de negocio</div></div>
+    <div class="step"><div class="num">3</div><div class="lbl">Identifica métricas</div></div>
+    <div class="step"><div class="num">4</div><div class="lbl">Ajusta por factibilidad</div></div>
+    <div class="step"><div class="num">5</div><div class="lbl">Recolecta datos</div></div>
+    <div class="step"><div class="num">6</div><div class="lbl">Calcula el valor de negocio</div></div>
+    <div class="step" style="border-color: rgba(255,153,0,0.5);"><div class="num">7</div><div class="lbl">Resultados finales</div><div style="font-size:11px; color:var(--accent); margin-top:6px;">Fin — Valor de negocio cuantificado →</div></div>
+  </div>
+
+  <div style="margin-top:28px; display:flex; gap:14px; justify-content:center;">
+    <span class="chip" style="background: rgba(31,155,255,0.12); color:#7ec3ff; border-color: rgba(31,155,255,0.35);">Compuertas de aprobación en cada etapa</span>
+    <span class="chip" style="background: rgba(38,194,129,0.12); color:#6be0a7; border-color: rgba(38,194,129,0.35);">Registro de auditoría completo</span>
+    <span class="chip">Funciona solo con contexto de negocio</span>
+  </div>
+</section>
+
+<!-- SLIDE 5: What you will do today -->
+<section class="slide" data-notes="Hoy ejecutarás BVIF de principio a fin para Precision Furniture — uno de los escenarios ficticios disponibles en la carpeta bvif-scenarios. Es un fabricante de muebles B2B que acabamos de presentar. Usarás Kiro y el documento del guion que hemos preparado. Trabaja en equipos de 1 a 3. No necesitas ser experto en Precision Furniture — el guion tiene todo lo que necesitas, y el agente pedirá contexto sobre la marcha. Los tres objetivos: (1) Capturar tu retroalimentación para mejorar BVIF. (2) Familiarizarte con el proceso para que puedas ejecutarlo en vivo con un cliente. (3) Prepararte para entregar la iniciativa a los clientes. Sé tú mismo — desafía al agente, cuestiona sus sugerencias, prueba casos límite. Ese es exactamente el tipo de retroalimentación que necesitamos.">
+  <span class="eyebrow">Taller · Parte 1</span>
+  <h2 class="headline">Qué harás hoy</h2>
+
+  <div class="row" style="gap:28px; flex:1; align-items:stretch;">
+    <div class="col card" style="flex:1.2;">
+      <span class="pill">El ejercicio</span>
+      <h3 style="color:var(--ink); font-size:26px; margin-top:10px;">Ejecuta BVIF para Precision Furniture</h3>
+      <ul class="bullets">
+        <li>Usa Kiro + el guion preparado</li>
+        <li>Trabaja en equipos pequeños (1–3 personas)</li>
+        <li>Presenta tus resultados y aprendizajes</li>
+      </ul>
+    </div>
+
+    <div class="col" style="flex:1;">
+      <div class="obj-grid" style="grid-template-columns: 1fr; gap:14px;">
+        <div class="obj">
+          <svg class="icon" viewBox="0 0 56 56" aria-hidden="true">
+            <circle cx="28" cy="28" r="24" fill="none" stroke="#ff9900" stroke-width="3"/>
+            <path d="M18 30 l7 7 l13 -17" fill="none" stroke="#ff9900" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <h3>Captura tu retroalimentación</h3>
+          <p>Qué funciona, qué no, qué falta.</p>
+        </div>
+        <div class="obj">
+          <svg class="icon" viewBox="0 0 56 56" aria-hidden="true">
+            <rect x="8" y="10" width="40" height="32" rx="4" fill="none" stroke="#1f9bff" stroke-width="3"/>
+            <path d="M16 22 h24 M16 30 h18" stroke="#1f9bff" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+          <h3>Familiarízate con el proceso</h3>
+          <p>Práctico, no un tutorial.</p>
+        </div>
+        <div class="obj">
+          <svg class="icon" viewBox="0 0 56 56" aria-hidden="true">
+            <path d="M28 8 l22 12 v16 l-22 12 l-22 -12 v-16 z" fill="none" stroke="#26c281" stroke-width="3"/>
+            <circle cx="28" cy="28" r="6" fill="#26c281"/>
+          </svg>
+          <h3>Prepárate para entregar con clientes</h3>
+          <p>Para que puedas ejecutarlo en vivo.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 6: Pre-work -->
+<section class="slide" data-notes="Antes de comenzar la parte práctica, hay dos cosas que cada equipo debe hacer. Lado de negocio: lee el guion de Precision Furniture en bvif-samples/bvif-scenarios/scenario_A-Manufacturing-company/. Tiene unas pocas páginas y cubre la empresa, los ejecutivos, las métricas operativas y la iniciativa. Sugerencia — usa IA (el asistente que prefieras) para consultar el documento en lugar de leerlo de principio a fin. Lado técnico: clona el repositorio desde GitLab AWS. Ese repo tiene los archivos de steering de Kiro, los detalles de las reglas y la ejecución de muestra que viste antes. Lee el README — explica cómo abrir el espacio de trabajo en Kiro y qué esperar. Tienes 30 minutos para el trabajo previo. Si te topas con problemas, avísanos — mejor resolverlos ahora que durante el taller.">
+  <span class="eyebrow">Taller · Parte 2</span>
+  <h2 class="headline">Trabajo previo</h2>
+
+  <div class="row" style="gap:24px; flex:1; align-items:stretch;">
+    <div class="col card">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:10px;">
+        <svg width="36" height="36" viewBox="0 0 36 36"><circle cx="18" cy="18" r="17" fill="none" stroke="#ff9900" stroke-width="2"/><text x="18" y="23" text-anchor="middle" fill="#ff9900" font-weight="800" font-size="16">B</text></svg>
+        <h3 style="color:var(--ink); font-size:22px;">Lado de negocio</h3>
+      </div>
+      <ul class="bullets">
+        <li>Lee el guion de Precision Furniture</li>
+        <li>Usa IA para consultar el documento — no lo leas de principio a fin</li>
+        <li>Enfócate en: perfil de la empresa, ejecutivos, métricas, la iniciativa</li>
+      </ul>
+    </div>
+
+    <div class="col card">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:10px;">
+        <svg width="36" height="36" viewBox="0 0 36 36"><circle cx="18" cy="18" r="17" fill="none" stroke="#1f9bff" stroke-width="2"/><text x="18" y="23" text-anchor="middle" fill="#1f9bff" font-weight="800" font-size="16">T</text></svg>
+        <h3 style="color:var(--ink); font-size:22px;">Lado técnico</h3>
+      </div>
+      <ul class="bullets">
+        <li>Clona: <span style="color:var(--accent); font-family: ui-monospace, monospace;">gitlab.aws.dev/maumunoz/kiro_for_bvif</span></li>
+        <li>Lee el README</li>
+        <li>Abre el espacio de trabajo en Kiro</li>
+      </ul>
+    </div>
+
+    <div class="col card" style="flex:0.6;">
+      <div class="pill" style="margin-bottom:10px;">Tamaño del equipo</div>
+      <div style="font-size:72px; font-weight:800; color:var(--ink);">1–3</div>
+      <p>personas por equipo. Se fomentan perfiles mixtos.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 7: Run the session -->
+<section class="slide" data-notes="Cómo ejecutar la sesión BVIF. Abre tu espacio de trabajo de Kiro y, en el chat, escribe: 'Run a business value identification for [explica la iniciativa de IA]'. Reemplaza los corchetes con la iniciativa que estás evaluando — para el taller, usa la idea de mantenimiento predictivo de Precision Furniture. A partir de ahí, sigue la guía que Kiro te da. Algunas notas prácticas. Primero: proporciona tus respuestas en archivos, no en el chat. Kiro creará archivos de interacción numerados secuencialmente (como 01-session-setup-questions.md) en cada carpeta de etapa. Ábrelos, responde en línea, guarda y dile a Kiro que terminaste. Cuestiona a Kiro cuando se equivoque — esto es una conversación, no un formulario. Segundo: cada artefacto es un archivo markdown. Usa la vista previa integrada de Kiro (el icono del ojo o Cmd/Ctrl+Shift+V) para legibilidad. Tercero: en la Etapa 5 (recolección de datos), puedes responder en línea o subir un archivo. Si subes, ponlo en la carpeta `uploads/` bajo la etapa 05. Para el taller puedes construir tu propio archivo de datos a partir del guion — prueba ambos caminos con diferentes equipos. Por último: si Kiro ofrece pasar esto a Spec mode en algún momento, decline cortésmente. BVIF tiene su propio flujo de trabajo.">
+  <span class="eyebrow">Taller · Parte 3</span>
+  <h2 class="headline">Ejecuta la sesión BVIF</h2>
+
+  <div class="card" style="margin-bottom: 18px;">
+    <div style="display:flex; align-items:center; gap:14px;">
+      <span class="pill">En el chat de Kiro</span>
+      <code style="flex:1; background: rgba(0,0,0,0.3); padding: 12px 16px; border-radius: 10px; font-size: 16px; color: var(--accent);">
+        Run a business value identification for my Predictive Maintenance using AI initiative
+      </code>
+    </div>
+  </div>
+
+  <div class="row" style="gap:18px; flex:1;">
+    <div class="col card">
+      <span class="pill">Consejo 1</span>
+      <h3 style="color:var(--ink); font-size:18px; margin-top:10px;">Respuestas en archivos, no en el chat</h3>
+      <p style="font-size:14px;">Kiro abre archivos .md numerados. Complétalos, guarda, confirma. Cuestiona cuando sea necesario.</p>
+    </div>
+    <div class="col card">
+      <span class="pill">Consejo 2</span>
+      <h3 style="color:var(--ink); font-size:18px; margin-top:10px;">Usa la vista previa de markdown de Kiro</h3>
+      <p style="font-size:14px;">Cada artefacto es .md — abre el panel de vista previa para legibilidad.</p>
+    </div>
+    <div class="col card">
+      <span class="pill">Consejo 3</span>
+      <h3 style="color:var(--ink); font-size:18px; margin-top:10px;">Etapa 5 — en línea o subir</h3>
+      <p style="font-size:14px;">Responde las preguntas en línea, o coloca un archivo de datos en <code style="color:var(--accent);">uploads/</code>.</p>
+    </div>
+    <div class="col card" style="background: rgba(255,107,107,0.08); border-color: rgba(255,107,107,0.35);">
+      <span class="pill" style="background: rgba(255,107,107,0.2); color: #ff9a9a; border-color: rgba(255,107,107,0.4);">Atención</span>
+      <h3 style="color:var(--ink); font-size:18px; margin-top:10px;">Si Kiro sugiere Spec mode</h3>
+      <p style="font-size:14px;">Decline cortésmente — BVIF tiene su propio flujo de trabajo.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 8: Presentation -->
+<section class="slide" data-notes="Cuando termine la parte del taller, cada equipo presenta durante 15 minutos. Cinco minutos sobre los resultados de BVIF — el total de valor de negocio, los impulsores clave, cualquier decisión interesante en el ajuste de métricas o la recolección de datos. Cinco minutos sobre aprendizajes y retroalimentación — qué te sorprendió, qué resultó torpe, qué cambiarías. Cinco minutos de preguntas y respuestas. Mantenlo informal. No estamos calificando presentaciones — estamos recopilando ideas que mejorarán el marco y el agente.">
+  <span class="eyebrow">Taller · Parte 4</span>
+  <h2 class="headline">Tu presentación · 15 minutos</h2>
+
+  <div style="flex:1; display:flex; flex-direction:column; justify-content:center; max-width:900px; margin:0 auto; width:100%;">
+
+    <div style="display:flex; gap:16px; margin-bottom:14px;">
+      <div style="flex:1;" class="card">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <div>
+            <div class="pill">Parte 1</div>
+            <h3 style="color:var(--ink); font-size:22px; margin-top:8px;">Resultados de BVIF</h3>
+          </div>
+          <div style="font-size:40px; font-weight:800; color: var(--accent);">5<span style="font-size:16px; color:var(--ink-dim); font-weight:500;">min</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:16px; margin-bottom:14px;">
+      <div style="flex:1;" class="card">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <div>
+            <div class="pill">Parte 2</div>
+            <h3 style="color:var(--ink); font-size:22px; margin-top:8px;">Aprendizajes y retroalimentación</h3>
+          </div>
+          <div style="font-size:40px; font-weight:800; color: var(--accent);">5<span style="font-size:16px; color:var(--ink-dim); font-weight:500;">min</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:16px;">
+      <div style="flex:1;" class="card">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <div>
+            <div class="pill">Parte 3</div>
+            <h3 style="color:var(--ink); font-size:22px; margin-top:8px;">Preguntas y respuestas</h3>
+          </div>
+          <div style="font-size:40px; font-weight:800; color: var(--accent);">5<span style="font-size:16px; color:var(--ink-dim); font-weight:500;">min</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- SLIDE 9: Agenda -->
+<section class="slide" data-notes="Aquí está la agenda completa del día. Introducción — esta sesión — 30 minutos. Trabajo previo — 30 minutos. Taller — la ejecución práctica de BVIF — 2 horas. Presentaciones — los equipos comparten — 60 minutos. Cierre — consolidar retroalimentación y próximos pasos — 30 minutos. Total: aproximadamente medio día. El taller en sí es el bloque más largo y donde ocurre la mayor parte del aprendizaje. Nota sobre el ritmo: si tu equipo avanza más rápido de lo esperado en BVIF, ve más despacio y prueba deliberadamente casos límite (datos malos, métricas faltantes, iniciativas ambiguas). Si vas más lento, pide ayuda — todos los equipos deberían llegar a la Etapa 7.">
+  <span class="eyebrow">Hoy</span>
+  <h2 class="headline" style="text-align:center;">Agenda</h2>
+
+  <div class="agenda" style="flex:1; align-content:center;">
+    <div class="agenda-row"><div class="n">1</div><div class="t">Introducción <span class="muted">(esta sesión)</span></div><div class="d">30 min</div></div>
+    <div class="agenda-row"><div class="n">2</div><div class="t">Trabajo previo</div><div class="d">30 min</div></div>
+    <div class="agenda-row"><div class="n">3</div><div class="t">Taller · BVIF práctico</div><div class="d">2 h</div></div>
+    <div class="agenda-row"><div class="n">4</div><div class="t">Presentaciones de equipos</div><div class="d">60 min</div></div>
+    <div class="agenda-row"><div class="n">5</div><div class="t">Cierre</div><div class="d">30 min</div></div>
+  </div>
+</section>
+
+<!-- SLIDE 10: Thank you -->
+<section class="slide" data-notes="Gracias. ¿Preguntas antes de comenzar el trabajo previo?">
+  <div class="thanks">
+    <h1>Gracias</h1>
+    <p>¿Preguntas?</p>
+    <div style="margin-top:36px; display:flex; gap:12px;">
+      <span class="chip">Diviértete</span>
+      <span class="chip">Comparte retroalimentación</span>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 11: Appendix — How steering works -->
+<section class="slide" data-notes="Apéndice A — cómo funciona el steering. No necesitas esto para ejecutar BVIF, pero ayuda entender qué ocurre bajo el capó. El archivo `.kiro/steering/bvif-rules/core-workflow.md` se carga como una regla de steering siempre incluida. Define las fases y etapas de BVIF e indica al agente que cargue archivos de apoyo desde `.kiro/bvif-rule-details/` bajo demanda. Las salidas van a una carpeta `bvif-docs/` en la raíz del espacio de trabajo. Cada iniciativa obtiene su propia subcarpeta — el agente te pide el nombre de la iniciativa, construye un slug corto y crea `bvif-docs/<NN>-<slug>-<yyyymm>/`. Todos los artefactos de esa iniciativa — el archivo de estado, el registro de auditoría, cada subcarpeta de etapa — viven dentro de esa carpeta por iniciativa. `<NN>` es un contador con relleno de ceros que empieza en 01 y se incrementa con cada nueva iniciativa. `<yyyymm>` es el año y mes en que se inició la iniciativa. Esto significa que puedes ejecutar múltiples sesiones BVIF en el mismo espacio de trabajo sin que los artefactos colisionen.">
+  <span class="eyebrow">Apéndice A</span>
+  <h2 class="headline">Cómo funciona el steering</h2>
+
+  <div class="row" style="flex:1; gap:22px; align-items:stretch;">
+    <div class="col card">
+      <span class="pill">Regla de steering</span>
+      <h3 style="color:var(--ink); font-size:18px; margin-top:8px;">.kiro/steering/bvif-rules/core-workflow.md</h3>
+      <p style="font-size:14px;">Siempre incluida. Define el flujo de trabajo de 7 etapas e indica al agente cuándo cargar archivos de apoyo.</p>
+
+      <div style="margin-top:14px;">
+        <span class="pill" style="background: rgba(38,194,129,0.15); color:#6be0a7; border-color: rgba(38,194,129,0.35);">Cargado bajo demanda</span>
+        <h3 style="color:var(--ink); font-size:18px; margin-top:8px;">.kiro/bvif-rule-details/</h3>
+        <p style="font-size:14px;">Guía específica por etapa, plantillas de preguntas, resumen del proceso.</p>
+      </div>
+    </div>
+
+    <div class="col card" style="flex:1.2;">
+      <span class="pill">Estructura de salida</span>
+      <pre style="margin-top:10px; font-size:12.5px; line-height:1.6; color: var(--ink-dim); background: rgba(0,0,0,0.25); padding: 16px; border-radius: 10px; overflow:auto;">
+bvif-docs/
+└── <span style="color:var(--accent);">01-customer-churn-predictor-202604/</span>
+    ├── 00-session-setup/
+    ├── 01-initiative-definition/
+    ├── 02-business-value-mapping/
+    ├── 03-metrics-identification/
+    ├── 04-metrics-adjustment/
+    ├── 05-data-collection/
+    │   └── uploads/
+    ├── 06-business-value-calculation/
+    ├── 07-final-results/
+    ├── bvif-state.md
+    └── audit.md</pre>
+      <p style="font-size:13px; margin-top:10px;">
+        <span style="color:var(--accent); font-weight:700;">&lt;NN&gt;</span> = contador correlativo ·
+        <span style="color:var(--accent); font-weight:700;">&lt;slug&gt;</span> = nombre corto de la iniciativa ·
+        <span style="color:var(--accent); font-weight:700;">&lt;yyyymm&gt;</span> = fecha de inicio
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 12: Appendix — BVIF scenarios & samples -->
+<section class="slide" data-notes="Apéndice B — escenarios y muestras de BVIF. La carpeta `bvif-samples/` del repo está organizada para contener múltiples escenarios a lo largo del tiempo. Cada escenario vive en su propia subcarpeta bajo `bvif-samples/bvif-scenarios/`. Hoy tenemos el Escenario A — Precision Furniture Inc. — pero pueden agregarse escenarios adicionales en el futuro. La carpeta `bvif-samples/bvif-docs/` contiene los artefactos de la ejecución de referencia (la salida completa) del Escenario A. Muestra cada archivo de interacción, cada aprobación, el registro de auditoría y el documento de resultados finales — el mismo documento que produjo el resultado de $9.36M que vimos antes. Úsalo solo como referencia. Tu ejecución será distinta, y está bien. Queremos activamente ver experiencias y resultados distintos — así es como validamos el marco entre equipos y estilos. No lo trates como una hoja de respuestas.">
+  <span class="eyebrow">Apéndice B</span>
+  <h2 class="headline">Escenarios y muestras de BVIF</h2>
+
+  <div class="row" style="flex:1; gap:22px; align-items:stretch;">
+    <div class="col card">
+      <span class="pill">Dónde viven los escenarios</span>
+      <h3 style="color:var(--ink); font-size:20px; margin-top:8px; font-family: ui-monospace, monospace; color: var(--accent);">bvif-samples/bvif-scenarios/</h3>
+      <ul class="bullets" style="margin-top:10px;">
+        <li>Una carpeta por escenario (guion + README)</li>
+        <li>Actualmente: <strong>Escenario A</strong> — Precision Furniture Inc.</li>
+        <li>Pueden agregarse más escenarios con el tiempo</li>
+      </ul>
+      <span class="pill" style="margin-top:18px;">Ejecución de referencia</span>
+      <h3 style="color:var(--ink); font-size:20px; margin-top:8px; font-family: ui-monospace, monospace; color: var(--accent);">bvif-samples/bvif-docs/</h3>
+      <ul class="bullets" style="margin-top:10px;">
+        <li>Salida BVIF completa para el Escenario A → $9.36M</li>
+        <li>Cada interacción, aprobación y artefacto</li>
+      </ul>
+    </div>
+
+    <div class="col card" style="background: rgba(255,153,0,0.08); border-color: rgba(255,153,0,0.35);">
+      <span class="pill">Solo como referencia</span>
+      <h3 style="color:var(--ink); font-size:22px; margin-top:10px;">Tu ejecución será distinta</h3>
+      <p>Y eso es exactamente lo que queremos.</p>
+      <ul class="bullets" style="margin-top:10px;">
+        <li>Equipos distintos, decisiones distintas</li>
+        <li>Métricas distintas, totales distintos</li>
+        <li>Esto valida BVIF entre experiencias</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+</div><!-- /deck -->
+
+<div class="notes-panel" id="notes">
+  <h4>Notas del presentador</h4>
+  <div id="notes-content"></div>
+</div>
+
+<div class="counter"><span id="curr">1</span> / <span id="total">1</span></div>
+<div class="controls">
+  <button class="btn" id="prev">← Anterior</button>
+  <button class="btn" id="next">Siguiente →</button>
+  <button class="btn" id="notesBtn">Notas (N)</button>
+  <button class="btn" id="fsBtn">Pantalla completa (F)</button>
+</div>
+<div class="progress"><span id="bar"></span></div>
+
+<script>
+  (function () {
+    const body = document.body;
+    const backBtn = document.getElementById('backBtn');
+    const curr  = document.getElementById('curr');
+    const tot   = document.getElementById('total');
+    const bar   = document.getElementById('bar');
+    const notes = document.getElementById('notes');
+    const notesContent = document.getElementById('notes-content');
+
+    // ---------- Decks (one per path) ----------
+    const decks = {
+      general:  { slides: Array.from(document.querySelectorAll('#deck .slide')),          i: 0 },
+      internal: { slides: Array.from(document.querySelectorAll('#deck-internal .slide')), i: 0 },
+    };
+
+    function activeDeck() {
+      return decks[body.dataset.route] || null;
+    }
+
+    function render() {
+      const deck = activeDeck();
+      if (!deck) return;
+      const total = deck.slides.length;
+      deck.slides.forEach((s, idx) => s.classList.toggle('active', idx === deck.i));
+      curr.textContent = deck.i + 1;
+      tot.textContent  = total;
+      bar.style.width  = ((deck.i + 1) / total * 100) + '%';
+      const n = deck.slides[deck.i] && deck.slides[deck.i].dataset.notes || '';
+      notesContent.innerHTML = n
+        ? '<p>' + n.replace(/\n/g, '</p><p>') + '</p>'
+        : '<p><em>Sin notas para esta diapositiva.</em></p>';
+    }
+
+    function go(delta) {
+      const deck = activeDeck();
+      if (!deck) return;
+      deck.i = Math.max(0, Math.min(deck.slides.length - 1, deck.i + delta));
+      render();
+    }
+
+    // ---------- Path routing ----------
+    function setRoute(route) {
+      body.dataset.route = route;
+      backBtn.classList.toggle('visible', route !== 'landing');
+      if (route === 'general' || route === 'internal') {
+        // Reset to first slide each time a path is entered
+        decks[route].i = 0;
+        render();
+      }
+    }
+
+    document.querySelectorAll('.path-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const path = btn.dataset.path;
+        if (path === 'general' || path === 'internal') setRoute(path);
+      });
+    });
+
+    // "Jump to setup" shortcut on the landing page → enter internal path, go to slide 6, activate step 1.1
+    document.querySelectorAll('.path-shortcut').forEach((link) => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const stepId = link.dataset.jumpStep || '1.1';
+        setRoute('internal');
+        // Find the slide that contains the step tree and jump to it
+        const treeBtn = document.querySelector('.tree-step[data-step="' + stepId + '"]');
+        const targetSlide = treeBtn && treeBtn.closest('.slide');
+        if (targetSlide) {
+          const slides = decks.internal.slides;
+          const idx = slides.indexOf(targetSlide);
+          if (idx >= 0) {
+            decks.internal.i = idx;
+            render();
+          }
+        }
+        activateStep(stepId);
+      });
+    });
+
+    backBtn.addEventListener('click', () => setRoute('landing'));
+
+    // ---------- Step-by-step guide tree ----------
+    // Map step IDs to the phase they belong to (so the feedback form can prefill)
+    const STEP_TO_PHASE = {
+      '1.1': 'Phase 1 — Setup', '1.2': 'Phase 1 — Setup',
+      '1.3': 'Phase 1 — Setup', '1.3a': 'Phase 1 — Setup', '1.3b': 'Phase 1 — Setup',
+      '1.4': 'Phase 1 — Setup',
+      '2.1': 'Phase 2 — Run the BVIF process', '2.2': 'Phase 2 — Run the BVIF process',
+      '2.3': 'Phase 2 — Run the BVIF process', '2.4': 'Phase 2 — Run the BVIF process',
+      '2.4a': 'Phase 2 — Run the BVIF process', '2.4b': 'Phase 2 — Run the BVIF process',
+      '3.1': 'Phase 3 — Present results', '3.2': 'Phase 3 — Present results',
+      '3.3': 'Phase 3 — Present results',
+      '4.1': 'Final feedback', '4.2': 'Final feedback',
+    };
+
+    function feedbackLabelForStep(step) {
+      const btn = document.querySelector('.tree-step[data-step="' + step + '"] .step-label');
+      const text = btn ? btn.textContent.trim().replace(/^↳\s*/, '') : step;
+      // For sub-options, prepend the parent step number for clarity (e.g. "1.3 · Option A")
+      if (/^[0-9]+\.[0-9]+[a-z]$/i.test(step)) {
+        const parent = step.replace(/[a-z]$/i, '');
+        return parent + ' · ' + text;
+      }
+      return /^[0-9]+\.[0-9]+/.test(text) ? text : (step + ' ' + text);
+    }
+
+    const BVIF_STEPS = new Set(['2.4', '2.4a', '2.4b']);
+
+    async function populateInitiativeSelect(form, { force = false } = {}) {
+      const select = form && form.elements && form.elements.bvifInitiative;
+      if (!select || (!force && select.dataset.populated === '1')) return [];
+      const previous = select.value;
+      const names = await listInitiativeFolders();
+      // Wipe options except the placeholder
+      select.innerHTML = '';
+      const placeholder = document.createElement('option');
+      placeholder.value = '';
+      placeholder.textContent = names.length ? '— elige una iniciativa —' : '— no se encontraron iniciativas en bvif-docs/ —';
+      select.appendChild(placeholder);
+      names.forEach((name) => {
+        const opt = document.createElement('option');
+        opt.value = name;
+        opt.textContent = name;
+        select.appendChild(opt);
+      });
+      // Restore previous selection if it still exists
+      if (previous && names.includes(previous)) select.value = previous;
+      if (names.length) select.dataset.populated = '1';
+      return names;
+    }
+
+    async function autofillBvifStage(form) {
+      const initInput = form && form.elements && form.elements.bvifInitiative;
+      const stageInput = form && form.elements && form.elements.bvifStage;
+      if (!initInput || !stageInput) return;
+      const name = (initInput.value || '').trim();
+      if (!name) return;
+      const stage = await findFirstUncompletedStage(name);
+      if (stage && !stageInput.dataset.userEdited) {
+        // Try to match an existing <option> value first
+        const exists = Array.from(stageInput.options).some((o) => o.value === stage);
+        stageInput.value = exists ? stage : '';
+      }
+    }
+
+    function refreshSlideFeedbackForm(step) {
+      const form = document.getElementById('slide-feedback-form');
+      if (!form) return;
+      const phase = STEP_TO_PHASE[step] || '';
+      const stepLabel = feedbackLabelForStep(step);
+      if (form.elements.phase) form.elements.phase.value = phase;
+      if (form.elements.step)  form.elements.step.value  = stepLabel;
+
+      const bvifBlock = form.querySelector('[data-bvif-fields]');
+      if (!bvifBlock) return;
+      const showBvif = BVIF_STEPS.has(step);
+      bvifBlock.style.display = showBvif ? 'flex' : 'none';
+      if (showBvif && workspaceDirHandle) {
+        // Try to populate options + auto-fill the stage if we already have a workspace handle
+        populateInitiativeSelect(form).then(() => autofillBvifStage(form)).catch(() => {});
+      }
+    }
+
+    function activateStep(step) {
+      const slide = document.querySelector('.tree-step[data-step="' + step + '"]');
+      const slideEl = slide && slide.closest('.slide');
+      if (!slide || !slideEl) return;
+      slideEl.querySelectorAll('.tree-step').forEach((b) => b.classList.toggle('active', b.dataset.step === step));
+      slideEl.querySelectorAll('.step-panel').forEach((p) => p.classList.toggle('active', p.dataset.step === step));
+      refreshSlideFeedbackForm(step);
+    }
+
+    function syncParentCheck() {
+      // When any sub-option (1.3a, 1.3b) is checked, mark the parent (1.3) checked too.
+      const parents = [
+        { parent: '1.3', children: ['1.3a', '1.3b'] },
+        { parent: '2.4', children: ['2.4a', '2.4b'] },
+      ];
+      parents.forEach(({ parent, children }) => {
+        const parentEl = document.querySelector('.tree-step[data-step="' + parent + '"]');
+        if (!parentEl) return;
+        const anyChildDone = children.some((c) => {
+          const el = document.querySelector('.tree-step[data-step="' + c + '"]');
+          return el && el.classList.contains('done');
+        });
+        if (anyChildDone) parentEl.classList.add('done');
+      });
+    }
+
+    document.querySelectorAll('.tree-step').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        // Clicking the checkbox toggles "done" without navigating
+        if (e.target.closest('.step-check')) {
+          btn.classList.toggle('done');
+          syncParentCheck();
+          return;
+        }
+        activateStep(btn.dataset.step);
+      });
+    });
+
+    // Option A / Option B boxes inside step 1.3 jump to their sub-step
+    document.querySelectorAll('.tree-jump').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        activateStep(btn.dataset.jump);
+      });
+    });
+
+    const treeReset = document.getElementById('tree-reset');
+    if (treeReset) {
+      treeReset.addEventListener('click', (e) => {
+        e.stopPropagation();
+        document.querySelectorAll('.tree-step.done').forEach((b) => b.classList.remove('done'));
+      });
+    }
+
+    // ---------- Feedback form ----------
+    function detectAliasFromPath() {
+      try {
+        const path = decodeURIComponent(window.location.pathname || '');
+        // macOS / Windows: /Users/<alias>/...
+        let m = path.match(/\/Users\/([^/]+)\//i);
+        if (m && m[1]) return m[1];
+        // Linux: /home/<alias>/...
+        m = path.match(/\/home\/([^/]+)\//i);
+        if (m && m[1]) return m[1];
+      } catch (_) { /* noop */ }
+      return '';
+    }
+
+    function nowIso() {
+      const d = new Date();
+      const pad = (n) => String(n).padStart(2, '0');
+      return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+    }
+
+    const detectedAlias = detectAliasFromPath();
+    let workspaceDirHandle = null;  // root of the kiro_for_bvif workspace (cached after first pick)
+    let feedbackDirHandle = null;   // 0.workshop/feedback resolved from the workspace root
+
+    function setFormStatus(form, msg, kind) {
+      const el = form.querySelector('[data-form-status]');
+      if (!el) return;
+      el.textContent = msg;
+      el.classList.remove('ok', 'warn', 'error');
+      if (kind) el.classList.add(kind);
+    }
+
+    function prefillForm(form) {
+      const alias = form.elements.alias;
+      const date  = form.elements.date;
+      if (alias && !alias.value) alias.value = detectedAlias;
+      if (date) date.value = nowIso();
+    }
+
+    async function ensureWorkspaceDir() {
+      if (workspaceDirHandle) return workspaceDirHandle;
+      if (!('showDirectoryPicker' in window)) {
+        throw new Error('Tu navegador no admite escribir directamente en una carpeta. Usa Chrome, Edge o Arc — o descarga el JSON manualmente.');
+      }
+      workspaceDirHandle = await window.showDirectoryPicker({
+        id: 'bvif-workspace',
+        mode: 'readwrite',
+        startIn: 'documents',
+      });
+      return workspaceDirHandle;
+    }
+
+    async function getDirChain(root, parts, { create = false } = {}) {
+      let dir = root;
+      for (const part of parts) {
+        dir = await dir.getDirectoryHandle(part, { create });
+      }
+      return dir;
+    }
+
+    async function ensureFeedbackDir() {
+      if (feedbackDirHandle) return feedbackDirHandle;
+      const root = await ensureWorkspaceDir();
+      // Resolve <workspace>/bvif-samples/0.workshop/feedback (create if missing)
+      feedbackDirHandle = await getDirChain(root, ['bvif-samples', '0.workshop', 'feedback'], { create: true });
+      return feedbackDirHandle;
+    }
+
+    async function listInitiativeFolders() {
+      try {
+        const root = await ensureWorkspaceDir();
+        const docs = await getDirChain(root, ['bvif-docs']);
+        const names = [];
+        for await (const [name, handle] of docs.entries()) {
+          if (handle.kind === 'directory') names.push(name);
+        }
+        names.sort();
+        return names;
+      } catch (err) {
+        return [];
+      }
+    }
+
+    async function readBvifStateLines(initiativeName) {
+      const root = await ensureWorkspaceDir();
+      const initiativeDir = await getDirChain(root, ['bvif-docs', initiativeName]);
+      const fileHandle = await initiativeDir.getFileHandle('bvif-state.md');
+      const file = await fileHandle.getFile();
+      const text = await file.text();
+      // Returns ordered list of {label, done, indent} for every "- [ ] / - [x]" line
+      const out = [];
+      const lines = text.split(/\r?\n/);
+      for (const ln of lines) {
+        const m = ln.match(/^(\s*)-\s*\[(\s|x|X)\]\s+(.+?)\s*$/);
+        if (!m) continue;
+        out.push({
+          indent: m[1].length > 0,
+          done:   /[xX]/.test(m[2]),
+          label:  m[3].trim(),
+        });
+      }
+      return out;
+    }
+
+    async function findFirstUncompletedStage(initiativeName) {
+      try {
+        const items = await readBvifStateLines(initiativeName);
+        const firstUnchecked = items.find((it) => !it.done && !it.indent);
+        if (firstUnchecked) return firstUnchecked.label;
+        return 'COMPLETE';
+      } catch (err) {
+        return '';
+      }
+    }
+
+    async function appendFeedback(entry) {
+      const dir = await ensureFeedbackDir();
+      const filename = 'feedback-' + (entry.alias || 'anonymous').replace(/[^A-Za-z0-9_-]/g, '_') + '.json';
+      const fileHandle = await dir.getFileHandle(filename, { create: true });
+
+      // Read existing content (if any), parse, append
+      let entries = [];
+      try {
+        const existing = await fileHandle.getFile();
+        const text = await existing.text();
+        if (text.trim()) {
+          const parsed = JSON.parse(text);
+          if (Array.isArray(parsed)) entries = parsed;
+        }
+      } catch (_) { /* new file or unreadable — start fresh */ }
+
+      entries.push(entry);
+
+      const writable = await fileHandle.createWritable();
+      await writable.write(JSON.stringify(entries, null, 2));
+      await writable.close();
+      return filename;
+    }
+
+    function downloadFeedback(entry) {
+      const blob = new Blob([JSON.stringify(entry, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const stamp = entry.date.replace(/[: ]/g, '-');
+      a.href = url;
+      a.download = 'feedback-' + (entry.alias || 'anonymous') + '-' + stamp + '.json';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    // Initial prefill of phase/step for the slide-level form (defaults to step 1.1)
+    refreshSlideFeedbackForm('1.1');
+
+    function setupMic(form) {
+      const btn = form.querySelector('[data-mic]');
+      // Find the textarea this mic should drive: prefer the one explicitly named, otherwise the closest textarea.
+      const targetName = btn && btn.dataset.micTarget;
+      const textarea = form.querySelector(targetName ? ('textarea[name="' + targetName + '"]') : 'textarea[name="feedback"]')
+                    || form.querySelector('textarea');
+      if (!btn || !textarea) return;
+      const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!Recognition) {
+        btn.disabled = true;
+        btn.title = 'El dictado no es compatible con este navegador. Prueba Chrome, Edge o Arc.';
+        btn.style.opacity = 0.45;
+        btn.style.cursor = 'not-allowed';
+        return;
+      }
+      const rec = new Recognition();
+      rec.lang = navigator.language || 'es-ES';
+      rec.interimResults = true;
+      rec.continuous = true;
+
+      let baseText = '';   // text already in the textarea before the current dictation
+      let interim = '';
+      let recording = false;
+
+      function applyTranscript(finalChunk, interimChunk) {
+        const sep = (baseText && !/[\s\n]$/.test(baseText)) ? ' ' : '';
+        textarea.value = baseText + sep + finalChunk + interimChunk;
+      }
+
+      rec.addEventListener('result', (e) => {
+        let finalSoFar = '';
+        let interimSoFar = '';
+        for (let i = e.resultIndex; i < e.results.length; i++) {
+          const t = e.results[i][0].transcript;
+          if (e.results[i].isFinal) finalSoFar += t;
+          else interimSoFar += t;
+        }
+        // Persist finals into baseText so they survive subsequent results
+        if (finalSoFar) {
+          const sep = (baseText && !/[\s\n]$/.test(baseText)) ? ' ' : '';
+          baseText = baseText + sep + finalSoFar.trim();
+          interim = '';
+        } else {
+          interim = interimSoFar;
+        }
+        applyTranscript('', interim);
+      });
+
+      rec.addEventListener('error', (e) => {
+        setFormStatus(form, 'Error de dictado: ' + e.error, 'warn');
+        stop();
+      });
+      rec.addEventListener('end', () => {
+        // If user expected continuous and it auto-stopped, end gracefully
+        recording = false;
+        btn.classList.remove('recording');
+      });
+
+      function start() {
+        baseText = textarea.value;
+        interim = '';
+        try {
+          rec.start();
+          recording = true;
+          btn.classList.add('recording');
+          btn.title = 'Detener dictado';
+          setFormStatus(form, 'Escuchando… haz clic en el micrófono para detener.', 'ok');
+        } catch (err) {
+          setFormStatus(form, 'No se pudo iniciar el dictado: ' + (err.message || err), 'warn');
+        }
+      }
+      function stop() {
+        try { rec.stop(); } catch (_) { /* noop */ }
+        recording = false;
+        btn.classList.remove('recording');
+        btn.title = 'Dictar (iniciar/detener)';
+      }
+
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (recording) stop(); else start();
+      });
+    }
+
+    document.querySelectorAll('.feedback-form').forEach((form) => {
+      prefillForm(form);
+      setupMic(form);
+
+      const pickBtn = form.querySelector('[data-pick-folder]');
+      if (pickBtn) {
+        pickBtn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          try {
+            await ensureFeedbackDir();
+            // Flip the top-of-form CTA from urgent (orange/pulsing) to connected (green/static)
+            const cta = form.querySelector('[data-workspace-cta]');
+            if (cta) {
+              cta.classList.add('connected');
+              const ctaLabel = cta.querySelector('.cta-label');
+              const ctaBtn   = cta.querySelector('.pick-btn');
+              if (ctaLabel) ctaLabel.textContent = '✓ Espacio de trabajo conectado';
+              if (ctaBtn) ctaBtn.textContent = 'Cambiar carpeta del espacio de trabajo';
+            }
+            setFormStatus(form, 'Espacio de trabajo listo — la retroalimentación se escribirá en bvif-samples/0.workshop/feedback/.', 'ok');
+            // Once the workspace is picked, populate dropdowns / auto-fill
+            populateInitiativeSelect(form, { force: true }).then(() => autofillBvifStage(form)).catch(() => {});
+            if (typeof window.__refreshStateMonitor === 'function') window.__refreshStateMonitor();
+          } catch (err) {
+            setFormStatus(form, err.message || String(err), 'warn');
+          }
+        });
+      }
+
+      // Refresh button next to the BVIF initiative dropdown
+      const refreshBtn = form.querySelector('[data-refresh-initiatives]');
+      if (refreshBtn) {
+        refreshBtn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          try {
+            await ensureWorkspaceDir();
+            const names = await populateInitiativeSelect(form, { force: true });
+            if (names.length) {
+              setFormStatus(form, 'Iniciativas actualizadas (' + names.length + ' encontradas).', 'ok');
+              await autofillBvifStage(form);
+            } else {
+              setFormStatus(form, 'Aún no se encontraron iniciativas en bvif-docs/ — inicia primero una sesión BVIF.', 'warn');
+            }
+          } catch (err) {
+            setFormStatus(form, err.message || String(err), 'warn');
+          }
+        });
+      }
+
+      // BVIF initiative input → re-detect the first uncompleted stage on change
+      const initInput = form.elements.bvifInitiative;
+      const stageInput = form.elements.bvifStage;
+      if (initInput) {
+        initInput.addEventListener('change', () => {
+          if (stageInput) delete stageInput.dataset.userEdited;
+          autofillBvifStage(form);
+        });
+      }
+      if (stageInput) {
+        const markEdited = () => { stageInput.dataset.userEdited = '1'; };
+        stageInput.addEventListener('input', markEdited);
+        stageInput.addEventListener('change', markEdited);
+      }
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const entry = {
+          alias:    (form.elements.alias.value    || 'anonymous').trim(),
+          date:     (form.elements.date.value     || nowIso()).trim(),
+          phase:    (form.elements.phase.value    || '').trim(),
+          step:     (form.elements.step.value     || '').trim(),
+          feedback: (form.elements.feedback.value || '').trim(),
+        };
+        // Include BVIF initiative/stage when those fields are visible (step 2.4 family)
+        const bvifBlock = form.querySelector('[data-bvif-fields]');
+        if (bvifBlock && bvifBlock.style.display !== 'none') {
+          const initVal  = (form.elements.bvifInitiative && form.elements.bvifInitiative.value || '').trim();
+          const stageVal = (form.elements.bvifStage      && form.elements.bvifStage.value      || '').trim();
+          if (initVal)  entry.bvifInitiative = initVal;
+          if (stageVal) entry.bvifStage      = stageVal;
+        }
+        if (!entry.feedback) {
+          setFormStatus(form, 'El texto de retroalimentación es obligatorio.', 'warn');
+          return;
+        }
+
+        submitBtn.disabled = true;
+        setFormStatus(form, 'Guardando…', '');
+        try {
+          const filename = await appendFeedback(entry);
+          setFormStatus(form, 'Guardado en ' + filename + '. Puedes seguir agregando más.', 'ok');
+          form.elements.feedback.value = '';
+          form.elements.date.value = nowIso();
+        } catch (err) {
+          // Fallback: download
+          try {
+            downloadFeedback(entry);
+            setFormStatus(form, 'Escritura directa no disponible — se descargó el JSON. Muévelo a 0.workshop/feedback/. Motivo: ' + (err.message || err), 'warn');
+            form.elements.feedback.value = '';
+          } catch (err2) {
+            setFormStatus(form, 'Error al guardar: ' + (err2.message || err2), 'error');
+          }
+        } finally {
+          submitBtn.disabled = false;
+        }
+      });
+    });
+
+    // ---------- Final feedback survey ----------
+    function setupFinalSurvey() {
+      const form = document.getElementById('final-survey-form');
+      if (!form) return;
+
+      setupMic(form);
+
+      // Build the 1–5 pip rows
+      const ratings = {};
+      form.querySelectorAll('.rating[data-rating]').forEach((wrap) => {
+        const name = wrap.dataset.rating;
+        for (let i = 1; i <= 5; i++) {
+          const pip = document.createElement('button');
+          pip.type = 'button';
+          pip.className = 'pip';
+          pip.textContent = String(i);
+          pip.dataset.value = String(i);
+          pip.addEventListener('click', (e) => {
+            e.stopPropagation();
+            wrap.querySelectorAll('.pip').forEach((p) => p.classList.toggle('selected', p === pip));
+            ratings[name] = i;
+          });
+          wrap.appendChild(pip);
+        }
+      });
+
+      // Prefill alias + date (date refreshes each load)
+      const aliasInput = form.elements.alias;
+      const dateInput  = form.elements.date;
+      if (aliasInput && !aliasInput.value) aliasInput.value = detectedAlias;
+      if (dateInput) dateInput.value = nowIso();
+
+      function setStatus(msg, kind) {
+        const el = form.querySelector('[data-form-status]');
+        if (!el) return;
+        el.textContent = msg;
+        el.classList.remove('ok', 'warn', 'error');
+        if (kind) el.classList.add(kind);
+      }
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const required = ['processScore', 'executionScore', 'prototypingValueScore', 'recommendScore'];
+        const missing = required.filter((k) => !ratings[k]);
+        if (missing.length) {
+          setStatus('Por favor responde las cuatro preguntas de calificación antes de enviar.', 'warn');
+          return;
+        }
+        const entry = {
+          alias:    (aliasInput && aliasInput.value || 'anonymous').trim(),
+          date:     (dateInput  && dateInput.value  || nowIso()).trim(),
+          phase:    'Final feedback',
+          step:     'Wrap-up survey',
+          processScore:           ratings.processScore,
+          executionScore:         ratings.executionScore,
+          prototypingValueScore:  ratings.prototypingValueScore,
+          recommendScore:         ratings.recommendScore,
+          comments: (form.elements.comments && form.elements.comments.value || '').trim(),
+        };
+
+        submitBtn.disabled = true;
+        setStatus('Guardando…', '');
+        try {
+          const filename = await appendFeedback(entry);
+          setStatus('¡Gracias! Guardado en ' + filename + '.', 'ok');
+          // Reset rating selection + comments + refresh date so they can submit a second pass if they want
+          form.querySelectorAll('.rating .pip.selected').forEach((p) => p.classList.remove('selected'));
+          for (const k of Object.keys(ratings)) delete ratings[k];
+          if (form.elements.comments) form.elements.comments.value = '';
+          if (dateInput) dateInput.value = nowIso();
+        } catch (err) {
+          try {
+            downloadFeedback(entry);
+            setStatus('Escritura directa no disponible — se descargó el JSON. Muévelo a 0.workshop/feedback/. Motivo: ' + (err.message || err), 'warn');
+          } catch (err2) {
+            setStatus('Error al guardar: ' + (err2.message || err2), 'error');
+          }
+        } finally {
+          submitBtn.disabled = false;
+        }
+      });
+    }
+    setupFinalSurvey();
+
+    // ---------- Step 2.4 monitor: live BVIF state checklist ----------
+    function setupStateMonitor() {
+      const monitor = document.querySelector('[data-state-monitor]');
+      if (!monitor) return;
+      const initSelect = monitor.querySelector('[data-monitor-initiative]');
+      const refreshBtn = monitor.querySelector('[data-monitor-refresh]');
+      const stagesEl   = monitor.querySelector('[data-monitor-stages]');
+
+      function setEmpty(text) {
+        stagesEl.innerHTML = '';
+        const li = document.createElement('li');
+        li.className = 'sm-empty';
+        li.textContent = text;
+        stagesEl.appendChild(li);
+      }
+
+      async function populateInitiatives({ force = false } = {}) {
+        if (!workspaceDirHandle) {
+          setEmpty('Elige la carpeta del espacio de trabajo (botón en la parte superior del formulario de retroalimentación), luego elige una iniciativa para ver su estado actual.');
+          return [];
+        }
+        const previous = initSelect.value;
+        const names = await listInitiativeFolders();
+        initSelect.innerHTML = '';
+        const placeholder = document.createElement('option');
+        placeholder.value = '';
+        placeholder.textContent = names.length ? '— elige una iniciativa —' : '— no se encontraron iniciativas en bvif-docs/ —';
+        initSelect.appendChild(placeholder);
+        names.forEach((name) => {
+          const opt = document.createElement('option');
+          opt.value = name;
+          opt.textContent = name;
+          initSelect.appendChild(opt);
+        });
+        if (previous && names.includes(previous)) initSelect.value = previous;
+        if (initSelect.value) renderStages(initSelect.value);
+        else if (names.length) setEmpty('Elige una iniciativa arriba para ver el progreso de sus etapas.');
+        else setEmpty('Aún no se encontraron iniciativas en bvif-docs/ — inicia primero una sesión BVIF en Kiro.');
+        return names;
+      }
+
+      async function renderStages(name) {
+        if (!name) { setEmpty('Elige una iniciativa arriba para ver el progreso de sus etapas.'); return; }
+        try {
+          const items = await readBvifStateLines(name);
+          if (!items.length) {
+            setEmpty('No se encontraron entradas de etapa en bvif-state.md.');
+            return;
+          }
+          stagesEl.innerHTML = '';
+          items.forEach((it) => {
+            const li = document.createElement('li');
+            li.className = (it.done ? 'done' : '') + (it.indent ? ' indent' : '');
+            const box = document.createElement('span');
+            box.className = 'sm-check';
+            const lbl = document.createElement('span');
+            lbl.textContent = it.label;
+            li.appendChild(box);
+            li.appendChild(lbl);
+            stagesEl.appendChild(li);
+          });
+        } catch (err) {
+          setEmpty('No se pudo leer bvif-state.md para "' + name + '": ' + (err.message || err));
+        }
+      }
+
+      initSelect.addEventListener('change', () => renderStages(initSelect.value));
+      refreshBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        try {
+          await ensureWorkspaceDir();
+          await populateInitiatives({ force: true });
+        } catch (err) {
+          setEmpty(err.message || String(err));
+        }
+      });
+
+      // Expose so the workspace-picker click can also refresh us
+      window.__refreshStateMonitor = () => populateInitiatives({ force: true });
+    }
+    setupStateMonitor();
+
+    // ---------- Copy-to-clipboard for code blocks ----------
+    document.querySelectorAll('.code-block .copy-btn').forEach((btn) => {
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const pre = btn.parentElement.querySelector('pre');
+        if (!pre) return;
+        try {
+          await navigator.clipboard.writeText(pre.innerText);
+          const original = btn.textContent;
+          btn.textContent = '¡Copiado!';
+          btn.classList.add('copied');
+          setTimeout(() => {
+            btn.textContent = original;
+            btn.classList.remove('copied');
+          }, 1500);
+        } catch (err) {
+          // Fallback: select the text so the user can copy manually
+          const range = document.createRange();
+          range.selectNodeContents(pre);
+          const sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(range);
+        }
+      });
+    });
+
+    document.getElementById('prev').onclick = () => go(-1);
+    document.getElementById('next').onclick = () => go(+1);
+    document.getElementById('notesBtn').onclick = () => notes.classList.toggle('visible');
+    document.getElementById('fsBtn').onclick = () => {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+      else document.exitFullscreen();
+    };
+
+    document.addEventListener('keydown', (e) => {
+      // Don't hijack keys when the user is typing in a form field
+      const tag = e.target && e.target.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (e.target && e.target.isContentEditable)) return;
+
+      // Always allow Esc to return to landing
+      if (e.key === 'Escape' && body.dataset.route !== 'landing') {
+        setRoute('landing');
+        return;
+      }
+      const deck = activeDeck();
+      if (!deck) return;
+
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(+1); }
+      else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(-1); }
+      else if (e.key === 'Home') { deck.i = 0; render(); }
+      else if (e.key === 'End')  { deck.i = deck.slides.length - 1; render(); }
+      else if (e.key.toLowerCase() === 'n') notes.classList.toggle('visible');
+      else if (e.key.toLowerCase() === 'f') {
+        if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+        else document.exitFullscreen();
+      }
+    });
+
+    // Touch swipe — deck only
+    let x0 = null;
+    document.addEventListener('touchstart', (e) => { x0 = e.changedTouches[0].clientX; });
+    document.addEventListener('touchend', (e) => {
+      if (x0 == null) return;
+      if (!activeDeck()) { x0 = null; return; }
+      const dx = e.changedTouches[0].clientX - x0;
+      if (Math.abs(dx) > 50) go(dx < 0 ? +1 : -1);
+      x0 = null;
+    });
+
+    // Initial state: landing screen
+    setRoute('landing');
+  })();
+</script>
+
+</body>
+</html>

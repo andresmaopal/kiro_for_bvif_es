@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BVIF Workshop — Introduction</title>
+  <style>
+    /* ---------- Base ---------- */
+    :root {
+      --bg: #0b1e3f;
+      --bg-2: #122a54;
+      --ink: #f7f9fc;
+      --ink-dim: #c6d1e3;
+      --accent: #ff9900;       /* AWS orange */
+      --accent-2: #1f9bff;
+      --ok: #26c281;
+      --warn: #f1c40f;
+      --danger: #ff6b6b;
+      --card: rgba(255,255,255,0.06);
+      --card-border: rgba(255,255,255,0.14);
+      --shadow: 0 10px 30px rgba(0,0,0,0.35);
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0; height: 100%;
+      background: radial-gradient(1200px 800px at 20% 10%, #14356a 0%, var(--bg) 60%);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    /* ---------- Slide deck ---------- */
+    .deck { position: relative; width: 100vw; height: 100vh; }
+    .slide {
+      position: absolute; inset: 0;
+      display: none;
+      padding: 56px 72px 88px;
+      animation: fade .35s ease;
+    }
+    .slide.active { display: flex; flex-direction: column; }
+    @keyframes fade { from { opacity: 0; transform: translateY(6px);} to { opacity: 1; transform: none;} }
+
+    h1, h2, h3 { margin: 0; font-weight: 700; letter-spacing: -0.01em; }
+    h1 { font-size: 64px; line-height: 1.05; }
+    h2 { font-size: 40px; line-height: 1.1; }
+    h3 { font-size: 22px; color: var(--ink-dim); font-weight: 500; }
+    p  { line-height: 1.45; color: var(--ink-dim); }
+
+    .eyebrow {
+      display: inline-block; font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--accent); font-weight: 700; margin-bottom: 14px;
+    }
+    .headline { margin-bottom: 28px; }
+
+    /* ---------- Chrome ---------- */
+    .topbar {
+      position: fixed; top: 14px; left: 20px; right: 20px;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 12px; color: var(--ink-dim); opacity: .8; z-index: 5;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 600;}
+    .brand-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px rgba(255,153,0,.2); }
+
+    .progress {
+      position: fixed; left: 0; right: 0; bottom: 0; height: 3px; background: rgba(255,255,255,0.07); z-index: 6;
+    }
+    .progress > span {
+      display: block; height: 100%; width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      transition: width .3s ease;
+    }
+
+    .controls {
+      position: fixed; right: 20px; bottom: 18px; display: flex; gap: 8px; z-index: 6;
+    }
+    .btn {
+      background: var(--card); border: 1px solid var(--card-border); color: var(--ink);
+      padding: 8px 12px; border-radius: 10px; cursor: pointer; font-size: 13px;
+      backdrop-filter: blur(6px);
+    }
+    .btn:hover { background: rgba(255,255,255,0.12); }
+
+    .counter {
+      position: fixed; left: 20px; bottom: 18px; font-size: 12px; color: var(--ink-dim);
+      background: var(--card); border: 1px solid var(--card-border); padding: 6px 10px; border-radius: 10px; z-index: 6;
+    }
+
+    /* ---------- Utility ---------- */
+    .row { display: flex; gap: 24px; }
+    .col { flex: 1; }
+    .center { display: flex; align-items: center; justify-content: center; }
+    .grow { flex: 1; }
+    .stack { display: flex; flex-direction: column; }
+    .muted { color: var(--ink-dim); }
+
+    .card {
+      background: var(--card); border: 1px solid var(--card-border);
+      border-radius: 18px; padding: 22px 24px; box-shadow: var(--shadow);
+    }
+
+    .chip {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 12px; border-radius: 999px;
+      background: rgba(255,153,0,0.12); color: var(--accent);
+      border: 1px solid rgba(255,153,0,0.35);
+      font-size: 12px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+    }
+
+    ul.bullets { list-style: none; padding: 0; margin: 0; }
+    ul.bullets li {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 10px 0; font-size: 20px; color: var(--ink);
+    }
+    ul.bullets li::before {
+      content: ""; flex: 0 0 10px; width: 10px; height: 10px; border-radius: 50%;
+      background: var(--accent); margin-top: 10px;
+    }
+
+    /* ---------- Title slide ---------- */
+    .title-hero { display: flex; flex-direction: column; justify-content: center; flex: 1; }
+    .title-hero h1 { font-size: 92px; }
+    .title-hero .sub { font-size: 24px; color: var(--ink-dim); margin-top: 16px; max-width: 900px; }
+
+    /* ---------- Personas ---------- */
+    .personas { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; flex: 1; align-items: stretch; }
+    .persona {
+      display: flex; flex-direction: column; align-items: center; text-align: center;
+      background: var(--card); border: 1px solid var(--card-border);
+      border-radius: 24px; padding: 36px 28px; position: relative; overflow: hidden;
+    }
+    .persona::after {
+      content: ""; position: absolute; inset: auto -30% -60% -30%; height: 220px;
+      background: radial-gradient(ellipse at center, rgba(255,153,0,.18), transparent 60%);
+      pointer-events: none;
+    }
+    .avatar {
+      width: 180px; height: 180px; border-radius: 50%;
+      background: linear-gradient(135deg, #1e3a74, #0d1f44);
+      display: grid; place-items: center; box-shadow: var(--shadow);
+      border: 2px solid rgba(255,255,255,0.1);
+    }
+    .persona h2 { margin-top: 22px; font-size: 36px; }
+    .persona .role { color: var(--accent); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; font-size: 13px; margin-top: 6px; }
+    .persona .tag { margin-top: 14px; font-size: 16px; color: var(--ink-dim); max-width: 360px; }
+
+    .company-banner {
+      display: flex; align-items: center; gap: 18px;
+      background: var(--card); border: 1px solid var(--card-border);
+      border-radius: 16px; padding: 14px 20px; margin-bottom: 20px;
+    }
+    .company-banner .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--accent-2); }
+
+    /* ---------- Results slide ---------- */
+    .big-value {
+      font-size: 96px; font-weight: 800; letter-spacing: -0.02em;
+      background: linear-gradient(90deg, var(--accent), #ffd166);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .value-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 18px; }
+    .value-strip .mini {
+      background: var(--card); border: 1px solid var(--card-border);
+      border-radius: 14px; padding: 14px 16px;
+    }
+    .value-strip .mini .lbl { font-size: 12px; color: var(--ink-dim); text-transform: uppercase; letter-spacing: 0.08em; }
+    .value-strip .mini .val { font-size: 22px; font-weight: 700; color: var(--ink); margin-top: 4px; }
+
+    .quote-card {
+      background: var(--card); border: 1px solid var(--card-border); border-radius: 16px;
+      padding: 20px 22px; font-style: italic; color: var(--ink); position: relative;
+    }
+    .quote-card::before {
+      content: "“"; position: absolute; top: -18px; left: 10px; font-size: 90px; color: var(--accent);
+      line-height: 1; font-family: Georgia, serif;
+    }
+
+    /* ---------- 7 steps ---------- */
+    .steps { display: grid; grid-template-columns: repeat(7, 1fr); gap: 14px; margin-top: 12px; }
+    .step {
+      background: var(--card); border: 1px solid var(--card-border);
+      border-radius: 14px; padding: 16px 12px; text-align: center; position: relative;
+    }
+    .step .num {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: var(--accent); color: #111; font-weight: 800;
+      display: grid; place-items: center; margin: 0 auto 10px;
+    }
+    .step .lbl { font-size: 13px; color: var(--ink); font-weight: 600; line-height: 1.25; }
+    .phase-band { display: grid; grid-template-columns: 2fr 2fr 3fr; gap: 14px; margin-top: 12px; }
+    .phase {
+      padding: 10px 14px; border-radius: 10px; text-align: center; font-weight: 700; font-size: 13px; letter-spacing: 0.05em; text-transform: uppercase;
+    }
+    .phase.discover { background: rgba(31,155,255,0.15); color: #7ec3ff; border: 1px solid rgba(31,155,255,.35); }
+    .phase.metrics  { background: rgba(38,194,129,0.15); color: #6be0a7; border: 1px solid rgba(38,194,129,.35); }
+    .phase.quant    { background: rgba(255,153,0,0.15); color: #ffc778;  border: 1px solid rgba(255,153,0,.35); }
+
+    /* ---------- Agenda ---------- */
+    .agenda { display: grid; grid-template-columns: 1fr; gap: 10px; max-width: 760px; margin: 0 auto; }
+    .agenda-row {
+      display: grid; grid-template-columns: 60px 1fr 120px;
+      align-items: center; gap: 16px;
+      background: var(--card); border: 1px solid var(--card-border); border-radius: 12px; padding: 14px 18px;
+    }
+    .agenda-row .n {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), #ffd166);
+      color: #111; font-weight: 800; display: grid; place-items: center;
+    }
+    .agenda-row .t { font-size: 18px; font-weight: 600; }
+    .agenda-row .d { text-align: right; color: var(--accent); font-weight: 700; }
+
+    /* ---------- Workshop ---------- */
+    .obj-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 18px; }
+    .obj {
+      background: var(--card); border: 1px solid var(--card-border);
+      border-radius: 16px; padding: 22px; text-align: center;
+    }
+    .obj .icon { width: 56px; height: 56px; margin: 0 auto 14px; }
+    .obj h3 { color: var(--ink); font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+    .obj p { font-size: 14px; }
+
+    .pill {
+      display: inline-block; padding: 4px 10px; border-radius: 999px;
+      background: rgba(31,155,255,0.15); color: #7ec3ff; border: 1px solid rgba(31,155,255,.35);
+      font-size: 12px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+    }
+
+    /* ---------- Thank you ---------- */
+    .thanks { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+    .thanks h1 { font-size: 140px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; background-clip: text; color: transparent;}
+    .thanks p { font-size: 22px; }
+
+    /* ---------- Presenter notes ---------- */
+    .notes-panel {
+      position: fixed; right: 20px; bottom: 60px;
+      width: 420px; max-height: 50vh; overflow: auto;
+      background: rgba(10, 20, 40, 0.95); border: 1px solid var(--card-border);
+      border-radius: 14px; padding: 16px 18px; font-size: 13px; color: var(--ink-dim);
+      display: none; z-index: 8; box-shadow: var(--shadow);
+    }
+    .notes-panel.visible { display: block; }
+    .notes-panel h4 { margin: 0 0 8px; color: var(--accent); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; }
+    .notes-panel p, .notes-panel li { color: var(--ink-dim); line-height: 1.5; }
+    .notes-panel ul { padding-left: 18px; }
+
+    /* ---------- Diagrams ---------- */
+    .diagram { width: 100%; max-width: 1000px; margin: 0 auto; }
+
+    /* Appendix */
+    .appendix-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; flex: 1; }
+    .appendix-grid .card h3 { color: var(--ink); font-size: 20px; margin-bottom: 8px; }
+
+    /* Responsive safety */
+    @media (max-width: 1100px) {
+      h1 { font-size: 48px; } h2 { font-size: 32px; }
+      .title-hero h1 { font-size: 64px; }
+      .big-value { font-size: 72px; }
+      .steps { grid-template-columns: repeat(4, 1fr); }
+    }
+
+    /* ---------- Landing & path screens ---------- */
+    .screen {
+      position: fixed; inset: 0;
+      display: none;
+      align-items: center; justify-content: center;
+      padding: 56px 72px;
+      background: radial-gradient(1200px 800px at 20% 10%, #14356a 0%, var(--bg) 60%);
+      z-index: 10;
+    }
+    .screen.active { display: flex; }
+    .screen-inner { max-width: 1100px; width: 100%; text-align: center; }
+    .screen-inner h1 { font-size: 72px; margin-top: 18px; }
+    .screen-inner .sub { font-size: 22px; color: var(--ink-dim); margin-top: 16px; max-width: 760px; margin-left: auto; margin-right: auto; }
+
+    .path-options {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+      margin-top: 56px; text-align: left;
+    }
+    .path-btn {
+      background: var(--card); border: 1px solid var(--card-border);
+      border-radius: 18px; padding: 28px 28px;
+      color: var(--ink); cursor: pointer; transition: transform .15s ease, border-color .15s ease, background .15s ease;
+      display: flex; flex-direction: column; gap: 10px;
+      font-family: inherit;
+    }
+    .path-btn:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255,153,0,0.55);
+      background: rgba(255,255,255,0.09);
+    }
+    .path-btn .path-eyebrow {
+      font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--accent); font-weight: 700;
+    }
+    .path-btn .path-title { font-size: 26px; font-weight: 700; color: var(--ink); }
+    .path-btn .path-desc  { font-size: 15px; color: var(--ink-dim); line-height: 1.5; }
+    .path-btn[disabled] { opacity: 0.65; cursor: not-allowed; }
+    .path-btn[disabled]:hover { transform: none; border-color: var(--card-border); background: var(--card); }
+    .path-btn .path-tag {
+      display: inline-block; align-self: flex-start; margin-top: 6px;
+      padding: 4px 10px; border-radius: 999px; font-size: 11px;
+      background: rgba(31,155,255,0.15); color: #7ec3ff;
+      border: 1px solid rgba(31,155,255,.35);
+      font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+    }
+
+    .back-btn {
+      position: fixed; left: 20px; top: 14px; z-index: 11;
+      background: var(--card); border: 1px solid var(--card-border); color: var(--ink);
+      padding: 8px 14px; border-radius: 10px; cursor: pointer; font-size: 13px;
+      backdrop-filter: blur(6px); display: none;
+    }
+    .back-btn.visible { display: inline-flex; }
+    .back-btn:hover { background: rgba(255,255,255,0.12); }
+
+    /* Hide deck chrome (counter, controls, progress) until a path is selected */
+    body[data-route="landing"] .counter,
+    body[data-route="landing"] .controls,
+    body[data-route="landing"] .progress { display: none; }
+
+    /* Show the right deck based on the active route */
+    body[data-route="landing"]  #deck,
+    body[data-route="landing"]  #deck-internal,
+    body[data-route="internal"] #deck,
+    body[data-route="general"]  #deck-internal { display: none; }
+
+    /* Show the landing screen only on the landing route */
+    body[data-route="general"]  #screen-landing,
+    body[data-route="internal"] #screen-landing { display: none; }
+
+    /* ---------- Step-by-step guide ---------- */
+    .tree-step {
+      display: flex; align-items: center; gap: 10px; width: 100%;
+      background: transparent; border: none; border-left: 3px solid transparent;
+      color: var(--ink-dim); text-align: left;
+      padding: 10px 14px; margin: 2px 0;
+      font: inherit; font-size: 14px; line-height: 1.4;
+      cursor: pointer; border-radius: 0 8px 8px 0;
+      transition: background .15s ease, color .15s ease, border-color .15s ease;
+    }
+    .tree-step:hover { background: rgba(255,255,255,0.06); color: var(--ink); }
+    .tree-step.active {
+      background: rgba(255,153,0,0.12);
+      color: var(--ink); font-weight: 600;
+      border-left-color: var(--accent);
+    }
+    .tree-step .step-check {
+      flex: 0 0 16px; width: 16px; height: 16px;
+      border: 1.5px solid var(--card-border); border-radius: 4px;
+      background: rgba(0,0,0,0.25);
+      display: grid; place-items: center;
+      transition: background .15s ease, border-color .15s ease;
+    }
+    .tree-step .step-check:hover { border-color: var(--accent); }
+    .tree-step .step-check::before {
+      content: ""; width: 10px; height: 10px;
+      background: var(--accent);
+      clip-path: polygon(14% 44%, 0 60%, 40% 100%, 100% 20%, 84% 7%, 38% 70%);
+      opacity: 0; transition: opacity .15s ease;
+    }
+    .tree-step.done .step-check { background: rgba(255,153,0,0.18); border-color: var(--accent); }
+    .tree-step.done .step-check::before { opacity: 1; }
+    .tree-step.done .step-label { text-decoration: line-through; opacity: 0.55; }
+    .tree-step .step-label { flex: 1; min-width: 0; }
+
+    .tree-reset-btn {
+      background: transparent; border: 1px solid var(--card-border); color: var(--ink-dim);
+      padding: 6px 12px; border-radius: 8px; font-size: 12px; cursor: pointer;
+      letter-spacing: 0.05em; text-transform: uppercase; font-weight: 600;
+      transition: background .15s ease, color .15s ease, border-color .15s ease;
+    }
+    .tree-reset-btn:hover { background: rgba(255,255,255,0.08); color: var(--ink); border-color: var(--ink-dim); }
+    .step-panel { display: none; }
+    .step-panel.active { display: flex; flex-direction: column; gap: 16px; }
+    .step-panel h3 { font-size: 30px; margin: 0; color: var(--ink); }
+    .step-panel .step-lede { font-size: 18px; color: var(--ink-dim); line-height: 1.5; margin: 0; }
+    .step-panel pre {
+      background: rgba(0,0,0,0.35); border: 1px solid var(--card-border);
+      border-radius: 12px; padding: 14px 16px; margin: 0;
+      font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 14px;
+      color: #c6e3ff; overflow-x: auto;
+      white-space: pre;
+    }
+    .code-block { position: relative; }
+    .code-block .copy-btn {
+      position: absolute; top: 8px; right: 8px;
+      background: rgba(255,255,255,0.08); border: 1px solid var(--card-border);
+      color: var(--ink-dim); border-radius: 6px;
+      padding: 4px 8px; font-size: 11px; cursor: pointer;
+      letter-spacing: 0.05em; text-transform: uppercase; font-weight: 600;
+      transition: background .15s ease, color .15s ease, border-color .15s ease;
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+    .code-block .copy-btn:hover { background: rgba(255,153,0,0.18); color: var(--ink); border-color: var(--accent); }
+    .code-block .copy-btn.copied { background: rgba(38,194,129,0.22); color: #6be0a7; border-color: rgba(38,194,129,0.55); }
+    .code-block .copy-btn svg { width: 12px; height: 12px; }
+    .step-panel ul { margin: 0; padding-left: 22px; color: var(--ink); font-size: 16px; line-height: 1.6; }
+    .step-panel a { color: var(--accent-2); }
+    .step-panel code {
+      background: rgba(0,0,0,0.3); border: 1px solid var(--card-border);
+      border-radius: 5px; padding: 1px 6px; font-size: 13px; color: #c6e3ff;
+      font-family: "SF Mono", Menlo, Consolas, monospace;
+    }
+    .step-panel .step-note {
+      border-left: 3px solid var(--accent); background: rgba(255,153,0,0.08);
+      padding: 12px 14px; border-radius: 0 10px 10px 0;
+      font-size: 14px; color: var(--ink-dim); line-height: 1.5;
+    }
+    .step-panel .step-image {
+      max-width: 100%; height: auto;
+      border-radius: 10px; border: 1px solid var(--card-border);
+    }
+    .step-option-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .step-option {
+      background: rgba(255,255,255,0.04); border: 1px solid var(--card-border);
+      border-radius: 12px; padding: 14px 16px;
+    }
+    .step-option .lbl { font-size: 12px; color: var(--accent); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+    .step-option .ttl { font-size: 16px; font-weight: 700; color: var(--ink); margin: 4px 0 8px; }
+    button.step-option.tree-jump {
+      width: 100%; transition: background .15s ease, border-color .15s ease, transform .15s ease;
+    }
+    button.step-option.tree-jump:hover {
+      background: rgba(255,153,0,0.10);
+      border-color: rgba(255,153,0,0.45);
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+<body data-route="landing">
+
+<div class="topbar">
+  <div class="brand"><span class="brand-dot"></span> BVIF Workshop</div>
+  <div>April 2026</div>
+</div>
+
+<button class="back-btn" id="backBtn">← Back to start</button>
+
+<!-- Landing screen — choose a path -->
+<section class="screen active" id="screen-landing">
+  <div class="screen-inner">
+    <span class="chip">AWS · AI Business Value Identification Framework</span>
+    <h1>BVIF Workshop</h1>
+    <p class="sub">From a plain-language AI idea to a quantified, evidence-based business case — in seven steps.</p>
+
+    <div class="path-options">
+      <button class="path-btn" data-path="internal">
+        <span class="path-eyebrow">Path 1</span>
+        <span class="path-title">Internal workshop</span>
+        <span class="path-desc">Tailored for AWS internal audiences. Includes AWS-specific context, internal tooling references, and links to the Wiki, SharePoint, and the GitLab repo.</span>
+        <span class="path-tag">Available</span>
+      </button>
+
+      <button class="path-btn" data-path="general">
+        <span class="path-eyebrow">Path 2</span>
+        <span class="path-title">General BVIF workshop</span>
+        <span class="path-desc">The standard, audience-agnostic deck. Walks through the Precision Furniture scenario, the 7-stage BVIF process, and the hands-on session in Kiro.</span>
+        <span class="path-tag">Available</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- Internal path — multi-slide deck -->
+<div class="deck" id="deck-internal">
+
+  <!-- INTERNAL SLIDE 1: What is BVIF and why it matters -->
+  <section class="slide active" data-notes="Open with the why — about 60 seconds. BVIF turns a plain-language AI idea into a quantified, evidence-based business case. Why it matters internally: keeps initiatives grounded on the business benefits they provide, shortens the path to a defensible business case, gives every account team a common language, and produces an auditable artifact that survives handoffs.">
+    <span class="eyebrow">What is BVIF — and why it matters</span>
+    <h2 class="headline">From a plain-language AI idea to quantified value</h2>
+
+    <div style="flex:1; display:grid; grid-template-rows: 3fr 2fr; gap: 32px; max-width: 1320px; width: 100%; margin: 18px auto 0;">
+
+      <!-- Big idea — top half, vertically centered -->
+      <div style="display:flex; align-items:center; justify-content:center; padding: 24px 48px;">
+        <p style="margin: 0; text-align:center; font-size:42px; line-height:1.3; color:var(--ink);">
+          A systematic framework to guide the extraction of quantitative value of an AI initiative — <span style="color:var(--accent); font-weight:700;">grounded in evidence, traceable end-to-end.</span>
+        </p>
+      </div>
+
+      <!-- Supporting cards — bottom half, stretched to fill the row -->
+      <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 18px;">
+        <div class="card" style="padding: 28px 26px; display:flex; flex-direction:column; justify-content:center;">
+          <h3 style="color:var(--ink); font-size:22px; margin-bottom:12px;">Business value at the center</h3>
+          <p style="font-size:16px; line-height:1.45;">Keeps AI initiatives grounded on the business benefits they provide.</p>
+        </div>
+        <div class="card" style="padding: 28px 26px; display:flex; flex-direction:column; justify-content:center;">
+          <h3 style="color:var(--ink); font-size:22px; margin-bottom:12px;">Grounded in customer data</h3>
+          <p style="font-size:16px; line-height:1.45;">No guessing — anchor the value of each initiative on customer data, and communicating in a shared business language.</p>
+        </div>
+        <div class="card" style="padding: 28px 26px; display:flex; flex-direction:column; justify-content:center;">
+          <h3 style="color:var(--ink); font-size:22px; margin-bottom:12px;">Quantitative comparison</h3>
+          <p style="font-size:16px; line-height:1.45;">Compare initiatives side by side — and track the same initiative over time.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- INTERNAL SLIDE 2: The BVIF process -->
+  <section class="slide" data-notes="Now the how — 60 seconds. BVIF is organized into three phases and seven stages. Discovery (blue): stages 1–2 define the initiative and map it to business value categories. Metrics (green): stages 3–4 identify candidate metrics and adjust for feasibility. Quantification (orange): stages 5–7 collect data, calculate the annualized value, and produce the final results document.">
+    <span class="eyebrow">The BVIF process</span>
+    <h2 class="headline">Three phases, seven stages</h2>
+
+    <div style="flex:1; display:grid; grid-template-rows: 3fr 2fr; gap: 24px; max-width: 1320px; width: 100%; margin: 18px auto 0;">
+
+      <!-- Process box -->
+      <div style="background: var(--card); border: 1px solid var(--card-border); border-radius: 22px; padding: 32px 36px; display:flex; flex-direction:column; gap: 22px;">
+        <div>
+          <h3 style="margin: 0 0 6px; color: var(--ink); font-size: 32px; font-weight: 800; letter-spacing: -0.01em;">The process</h3>
+          <div style="font-size: 18px; color: var(--ink-dim);">BVIF — three phases, seven stages</div>
+        </div>
+
+        <div class="phase-band" style="margin-top: 0;">
+          <div class="phase discover" style="font-size:15px; padding:14px 16px;">🔵  Discovery</div>
+          <div class="phase metrics"  style="font-size:15px; padding:14px 16px;">🟢  Metrics</div>
+          <div class="phase quant"    style="font-size:15px; padding:14px 16px;">🟡  Quantification</div>
+        </div>
+
+        <div class="steps" style="margin-top: 0; flex:1; align-items:stretch;">
+          <div class="step" style="border-color: rgba(31,155,255,0.5); padding: 22px 14px; display:flex; flex-direction:column; justify-content:center;"><div class="num">1</div><div class="lbl" style="font-size:15px;">Define the initiative</div><div style="font-size:11px; color:var(--accent); margin-top:8px;">← Start — The idea</div></div>
+          <div class="step" style="padding: 22px 14px; display:flex; flex-direction:column; justify-content:center;"><div class="num">2</div><div class="lbl" style="font-size:15px;">Extract business value categories</div></div>
+          <div class="step" style="padding: 22px 14px; display:flex; flex-direction:column; justify-content:center;"><div class="num">3</div><div class="lbl" style="font-size:15px;">Identify metrics</div></div>
+          <div class="step" style="padding: 22px 14px; display:flex; flex-direction:column; justify-content:center;"><div class="num">4</div><div class="lbl" style="font-size:15px;">Adjust for feasibility</div></div>
+          <div class="step" style="padding: 22px 14px; display:flex; flex-direction:column; justify-content:center;"><div class="num">5</div><div class="lbl" style="font-size:15px;">Collect data</div></div>
+          <div class="step" style="padding: 22px 14px; display:flex; flex-direction:column; justify-content:center;"><div class="num">6</div><div class="lbl" style="font-size:15px;">Calculate business value</div></div>
+          <div class="step" style="border-color: rgba(255,153,0,0.5); padding: 22px 14px; display:flex; flex-direction:column; justify-content:center;"><div class="num">7</div><div class="lbl" style="font-size:15px;">Final results</div><div style="font-size:11px; color:var(--accent); margin-top:8px;">End — Quantified business value →</div></div>
+        </div>
+      </div>
+
+      <!-- Tool box -->
+      <div style="background: var(--card); border: 1px solid var(--card-border); border-radius: 22px; padding: 32px 36px; display:flex; flex-direction:column; gap: 22px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap: 24px; flex-wrap: wrap;">
+          <h3 style="margin: 0; color: var(--ink); font-size: 32px; font-weight: 800; letter-spacing: -0.01em;">The tool</h3>
+          <img src="../../docs/images/kiro-wordmark.png" alt="Kiro" style="height: 44px; width:auto;" />
+        </div>
+
+        <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 22px; flex:1;">
+          <div style="display:flex; flex-direction:column; justify-content:center; padding: 8px 4px;">
+            <div style="font-size:18px; color:var(--accent); font-weight:800; letter-spacing:0.05em; text-transform:uppercase; margin-bottom:10px;">Embedded process</div>
+            <div style="font-size:18px; line-height:1.45; color:var(--ink);">The BVIF steps live inside Kiro as written directions, so the practitioner can simply follow them.</div>
+          </div>
+          <div style="display:flex; flex-direction:column; justify-content:center; padding: 8px 4px;">
+            <div style="font-size:18px; color:#7ec3ff; font-weight:800; letter-spacing:0.05em; text-transform:uppercase; margin-bottom:10px;">Inputs</div>
+            <div style="font-size:18px; line-height:1.45; color:var(--ink);">Guides the practitioner — requests information, asks questions.</div>
+          </div>
+          <div style="display:flex; flex-direction:column; justify-content:center; padding: 8px 4px;">
+            <div style="font-size:18px; color:#6be0a7; font-weight:800; letter-spacing:0.05em; text-transform:uppercase; margin-bottom:10px;">Outputs</div>
+            <div style="font-size:18px; line-height:1.45; color:var(--ink);">Produces every asset — intermediary artifacts and the final report.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- INTERNAL SLIDE 3: Why you are here, and what you will do -->
+  <section class="slide" data-notes="Anchor the audience — about 60 seconds. Why you're here: as tenured Amazonians and members of the T&I TFC, your feedback on both the value proposition and the execution of BVIF is the input we need to evolve the framework. What you'll do: run the full BVIF process end-to-end against a fictitious scenario in a controlled environment, then share feedback and outcomes. The hands-on experience is the fastest way to form a defensible opinion.">
+    <span class="eyebrow">Today's session</span>
+    <h2 class="headline">Why you are here, and what you will do</h2>
+
+    <div style="flex:1; display:grid; grid-template-columns: 1fr 1.4fr; gap: 24px; max-width: 1320px; width: 100%; margin: 18px auto 0;">
+
+      <!-- Why you are here -->
+      <div style="background: var(--card); border: 1px solid var(--card-border); border-radius: 22px; padding: 36px 40px; display:flex; flex-direction:column; gap: 22px;">
+        <div>
+          <h3 style="margin: 0 0 6px; color: var(--ink); font-size: 32px; font-weight: 800; letter-spacing: -0.01em;">Why you are here</h3>
+          <div style="font-size: 20px; color: var(--ink-dim);">Your feedback validates and improves the BVIF for customers.</div>
+        </div>
+
+        <div style="flex:1; display:flex; align-items:center;">
+          <p style="margin: 0; font-size: 28px; line-height: 1.45; color: var(--ink);">
+            As tenured Amazonians and members of the Transformation &amp; Innovation TFC, we appreciate your business mindset and want your feedback on the <span style="color: var(--accent); font-weight: 700;">value proposition</span> and the <span style="color: var(--accent); font-weight: 700;">execution</span> of BVIF.
+          </p>
+        </div>
+      </div>
+
+      <!-- What you will do -->
+      <div style="background: var(--card); border: 1px solid var(--card-border); border-radius: 22px; padding: 36px 40px; display:flex; flex-direction:column; gap: 22px;">
+        <div>
+          <h3 style="margin: 0 0 0; color: var(--ink); font-size: 32px; font-weight: 800; letter-spacing: -0.01em;">What you will do</h3>
+        </div>
+
+        <div style="flex:1; display:flex; flex-direction:column; gap: 22px; justify-content:center;">
+
+          <div style="display:grid; grid-template-columns: 64px 1fr; gap: 22px; align-items:center;">
+            <div style="width:56px; height:56px; border-radius:50%; background: linear-gradient(135deg, var(--accent), #ffd166); color:#111; font-weight:800; display:grid; place-items:center; font-size:24px;">1</div>
+            <div>
+              <div style="font-size:24px; font-weight:700; color:var(--ink);">Run the full BVIF process</div>
+              <div style="font-size:18px; color:var(--ink-dim); margin-top:4px; line-height:1.4;">Execute end-to-end against a fictitious scenario — experience the process first-hand in a controlled environment.</div>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns: 64px 1fr; gap: 22px; align-items:center;">
+            <div style="width:56px; height:56px; border-radius:50%; background: rgba(31,155,255,0.18); color:#7ec3ff; border:1px solid rgba(31,155,255,0.45); font-weight:800; display:grid; place-items:center; font-size:24px;">2</div>
+            <div>
+              <div style="font-size:24px; font-weight:700; color:var(--ink);">Provide feedback</div>
+              <div style="font-size:18px; color:var(--ink-dim); margin-top:4px; line-height:1.4;">On the value proposition, on the execution — what worked, what didn't, how valuable it is, when is more valuable.</div>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns: 64px 1fr; gap: 22px; align-items:center;">
+            <div style="width:56px; height:56px; border-radius:50%; background: rgba(38,194,129,0.18); color:#6be0a7; border:1px solid rgba(38,194,129,0.45); font-weight:800; display:grid; place-items:center; font-size:24px;">3</div>
+            <div>
+              <div style="font-size:24px; font-weight:700; color:var(--ink);">Share results and thoughts</div>
+              <div style="font-size:18px; color:var(--ink-dim); margin-top:4px; line-height:1.4;">Walk the room through your numbers, your decisions, and your takeaways.</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- INTERNAL SLIDE 4: Notes before starting -->
+  <section class="slide" data-notes="Set expectations before the hands-on block — about 60 seconds. Four things to flag: (1) The scenarios are fictitious — Manufacturing (single initiative, cost avoidance, US, more complex) or Sport Club (three initiatives, revenue uplift, Brazil, simpler — also lets participants compare initiatives). Pick whichever fits their context. (2) BVIF is an in-process version — encourage rich feedback and ask them to label whether each piece of feedback is about the process itself or about the execution. (3) Be as realistic as possible when answering Kiro, but expect outputs to vary across participants — that's the framework working as designed. (4) Logistics: Slack channel for today, use the huddle option for 1:1 consultations.">
+    <span class="eyebrow">Before you start</span>
+    <h2 class="headline">Notes before starting</h2>
+
+    <div style="flex:1; display:grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 22px; max-width: 1320px; width: 100%; margin: 18px auto 0;">
+
+      <!-- Note 1: Fictitious scenarios -->
+      <div style="background: var(--card); border: 1px solid var(--card-border); border-radius: 22px; padding: 28px 32px; display:flex; flex-direction:column; gap: 14px;">
+        <h3 style="margin: 0; color: var(--ink); font-size: 26px; font-weight: 800; letter-spacing: -0.01em;">Fictitious scenarios</h3>
+        <p style="margin: 0; font-size: 17px; color: var(--ink-dim); line-height: 1.4;">A controlled environment for the exercise. Pick one of two:</p>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px; flex:1;">
+          <div style="border: 1px solid rgba(31,155,255,0.45); background: rgba(31,155,255,0.10); border-radius: 14px; padding: 14px 16px; display:flex; flex-direction:column; gap:6px;">
+            <div style="font-size: 13px; color: #7ec3ff; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;">Scenario A</div>
+            <div style="font-size: 18px; font-weight: 700; color: var(--ink);">Manufacturing company</div>
+            <div style="font-size: 14px; color: var(--ink-dim); line-height: 1.4;">A single, technically richer initiative (predictive maintenance) — cost-avoidance value, more interacting metrics.</div>
+          </div>
+          <div style="border: 1px solid rgba(38,194,129,0.45); background: rgba(38,194,129,0.10); border-radius: 14px; padding: 14px 16px; display:flex; flex-direction:column; gap:6px;">
+            <div style="font-size: 13px; color: #6be0a7; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;">Scenario B</div>
+            <div style="font-size: 18px; font-weight: 700; color: var(--ink);">Sport club</div>
+            <div style="font-size: 14px; color: var(--ink-dim); line-height: 1.4;">Three lighter initiatives — revenue-uplift value; pick one or compare several to simulate prioritization.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Note 2: In-process version -->
+      <div style="background: var(--card); border: 1px solid var(--card-border); border-radius: 22px; padding: 28px 32px; display:flex; flex-direction:column; gap: 14px;">
+        <h3 style="margin: 0; color: var(--ink); font-size: 26px; font-weight: 800; letter-spacing: -0.01em;">This is an in-process version</h3>
+        <p style="margin: 0; font-size: 19px; color: var(--ink); line-height: 1.45;">Provide as much feedback as possible — and please clarify whether each comment is about the <span style="color: var(--accent); font-weight: 700;">process</span> or the <span style="color: var(--accent); font-weight: 700;">execution</span>.</p>
+      </div>
+
+      <!-- Note 3: Be realistic, expect variation -->
+      <div style="background: var(--card); border: 1px solid var(--card-border); border-radius: 22px; padding: 28px 32px; display:flex; flex-direction:column; gap: 14px;">
+        <h3 style="margin: 0; color: var(--ink); font-size: 26px; font-weight: 800; letter-spacing: -0.01em;">Run it as realistically as possible</h3>
+        <p style="margin: 0; font-size: 19px; color: var(--ink); line-height: 1.45;">Answer Kiro as a representative of the customer would. Results <em>will</em> vary across participants — that's the framework working as designed.</p>
+      </div>
+
+      <!-- Note 4: Logistics / Slack -->
+      <div style="background: var(--card); border: 1px solid var(--card-border); border-radius: 22px; padding: 28px 32px; display:flex; flex-direction:column; gap: 14px;">
+        <h3 style="margin: 0; color: var(--ink); font-size: 26px; font-weight: 800; letter-spacing: -0.01em;">Logistics</h3>
+        <p style="margin: 0; font-size: 19px; color: var(--ink); line-height: 1.45;">A <span style="color: var(--accent); font-weight: 700;">Slack channel</span> has been created for today's session. Use the <span style="color: var(--accent); font-weight: 700;">huddle</span> option for 1:1 consultations.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- INTERNAL SLIDE 5: Transition — Step-by-step instructions -->
+  <section class="slide" data-notes="Quick transition slide — about 10 seconds. From here on, the slide is a navigable visual of the workshop README. Tell participants they can follow along here, or open the README file directly — both contain the same instructions.">
+    <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;">
+      <span class="chip">Now we get hands-on</span>
+      <h1 style="margin-top: 24px; font-size: 92px; line-height: 1.05;">Step-by-step<br/>instructions</h1>
+      <p style="margin-top: 28px; max-width: 880px; font-size: 22px; color: var(--ink-dim); line-height: 1.5;">
+        A visual companion to the workshop <a href="https://gitlab.aws.dev/maumunoz/kiro_for_bvif/-/blob/main/bvif-samples/0.workshop/README.md" target="_blank" style="color: var(--accent-2); text-decoration: none; border-bottom: 1px dashed var(--accent-2);"><code style="font-size:18px; padding:2px 8px;">README.md</code></a>. Use either side: the slide deck for visual navigation, the file for text-based directions.
+      </p>
+    </div>
+  </section>
+
+  <!-- INTERNAL SLIDE 6: Interactive guide — README as a tree + content -->
+  <section class="slide" data-notes="This is the navigable companion to the README. Three top-level phases: Setup, Run the BVIF process, Present results. Each one has its own steps. Click a step in the tree to display its content on the right; tick the checkbox to mark it done. Encourage participants to use this slide as their reference during the hands-on block — and to keep the README open in parallel for copy-paste of commands.">
+    <span class="eyebrow">The workshop, step by step</span>
+    <h2 class="headline">Follow the steps — pick any to expand</h2>
+    <p style="margin: 0 0 18px; font-size: 16px; color: var(--ink-dim);">Tick the checkboxes as you finish each step to visualize your progress.</p>
+
+    <div style="flex:1; display:grid; grid-template-columns: 320px 1fr; gap: 24px; max-width: 1320px; width: 100%; margin: 12px auto 0; min-height: 0;">
+
+      <!-- LEFT: tree -->
+      <div style="background: var(--card); border: 1px solid var(--card-border); border-radius: 18px; padding: 18px 8px 18px 18px; overflow-y: auto;">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding: 0 14px 8px;">
+          <span style="font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-dim); font-weight: 700;">Your progress</span>
+          <button class="tree-reset-btn" id="tree-reset">Reset</button>
+        </div>
+        <div id="step-tree">
+          <!-- Phase 1 -->
+          <div style="font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); font-weight: 700; padding: 8px 14px 6px;">Phase 1 — Setup</div>
+          <button class="tree-step active" data-step="1.1"><span class="step-check"></span><span class="step-label">1.1 Install Kiro</span></button>
+          <button class="tree-step" data-step="1.2"><span class="step-check"></span><span class="step-label">1.2 Create the workspace folder</span></button>
+          <button class="tree-step" data-step="1.3"><span class="step-check"></span><span class="step-label">1.3 Copy the <code>.kiro/</code> folder</span></button>
+          <button class="tree-step" data-step="1.3a" style="margin-left: 18px; font-size: 13px;"><span class="step-check"></span><span class="step-label">↳ Option A — Clone via git</span></button>
+          <button class="tree-step" data-step="1.3b" style="margin-left: 18px; font-size: 13px;"><span class="step-check"></span><span class="step-label">↳ Option B — Download a zip</span></button>
+          <button class="tree-step" data-step="1.4"><span class="step-check"></span><span class="step-label">1.4 Open the workspace in Kiro</span></button>
+
+          <!-- Phase 2 -->
+          <div style="font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #6be0a7; font-weight: 700; padding: 16px 14px 6px;">Phase 2 — Run the BVIF process</div>
+          <button class="tree-step" data-step="2.1"><span class="step-check"></span><span class="step-label">2.1 Pick a scenario</span></button>
+          <button class="tree-step" data-step="2.2"><span class="step-check"></span><span class="step-label">2.2 Read the storyline</span></button>
+          <button class="tree-step" data-step="2.3"><span class="step-check"></span><span class="step-label">2.3 Start a new session in Kiro</span></button>
+          <button class="tree-step" data-step="2.4"><span class="step-check"></span><span class="step-label">2.4 Follow the prompts</span></button>
+          <button class="tree-step" data-step="2.4a" style="margin-left: 18px; font-size: 13px;"><span class="step-check"></span><span class="step-label">↳ Monitor progress</span></button>
+          <button class="tree-step" data-step="2.4b" style="margin-left: 18px; font-size: 13px;"><span class="step-check"></span><span class="step-label">↳ Note on Stage 5 (Data Collection)</span></button>
+
+          <!-- Phase 3 -->
+          <div style="font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #7ec3ff; font-weight: 700; padding: 16px 14px 6px;">Phase 3 — Present results</div>
+          <button class="tree-step" data-step="3.1"><span class="step-check"></span><span class="step-label">3.1 Walk through your deliverable</span></button>
+          <button class="tree-step" data-step="3.2"><span class="step-check"></span><span class="step-label">3.2 Share your top 2 feedback items</span></button>
+          <button class="tree-step" data-step="3.3"><span class="step-check"></span><span class="step-label">3.3 Presenter selection — The Wheel</span></button>
+        </div>
+      </div>
+
+      <!-- RIGHT: content panels -->
+      <div style="background: var(--card); border: 1px solid var(--card-border); border-radius: 18px; padding: 28px 32px; overflow-y: auto;">
+
+        <!-- 1.1 -->
+        <div class="step-panel active" data-step="1.1">
+          <h3>1.1 Install Kiro</h3>
+          <p class="step-lede">Install the Kiro IDE on your local machine before the session starts.</p>
+          <ul>
+            <li>Go to <a href="https://kiro.dev/" target="_blank">https://kiro.dev/</a> and follow the installation instructions for your OS.</li>
+            <li>Kiro is the only required tool. <code>git</code> and SSH access to <code>gitlab.aws.dev</code> are optional — only needed for Option A in step 1.3.</li>
+          </ul>
+        </div>
+
+        <!-- 1.2 -->
+        <div class="step-panel" data-step="1.2">
+          <h3>1.2 Create an empty workspace folder</h3>
+          <p class="step-lede">Create an empty folder anywhere on your local machine where you have write access. Kiro will use it as the base directory for all BVIF artifacts.</p>
+          <div class="code-block"><button class="copy-btn" type="button">Copy</button><pre>mkdir -p ~/workspace-bvif</pre></div>
+          <div class="step-note">The path does not matter — anywhere you can write. Example: <code>~/workspace-bvif/</code>.</div>
+        </div>
+
+        <!-- 1.3 -->
+        <div class="step-panel" data-step="1.3">
+          <h3>1.3 Copy the project files into your workspace</h3>
+          <p class="step-lede">Bring in <code>.kiro/</code>, <code>bvif-samples/</code>, <code>docs/</code>, and <code>README.md</code> — the steering rules, the worked scenarios, the supporting screenshots, and the project README. Pick whichever option fits your environment:</p>
+          <div class="step-option-grid">
+            <button class="step-option tree-jump" data-jump="1.3a" type="button" style="text-align:left; cursor:pointer; font:inherit; color:inherit;">
+              <div class="lbl">Option A →</div>
+              <div class="ttl">Clone via git</div>
+              <div style="font-size: 14px; color: var(--ink-dim); line-height: 1.5;">Recommended if you already have SSH set up to <code>gitlab.aws.dev</code>.</div>
+            </button>
+            <button class="step-option tree-jump" data-jump="1.3b" type="button" style="text-align:left; cursor:pointer; font:inherit; color:inherit;">
+              <div class="lbl">Option B →</div>
+              <div class="ttl">Download a zip</div>
+              <div style="font-size: 14px; color: var(--ink-dim); line-height: 1.5;">Use this if you don't have SSH access — works from a browser only.</div>
+            </button>
+          </div>
+          <p class="step-lede" style="font-size: 16px;">After either option, your workspace should look like this:</p>
+          <div class="code-block"><button class="copy-btn" type="button">Copy</button><pre>~/workspace-bvif/
+├── .kiro/
+│   ├── steering/
+│   └── bvif-rule-details/
+├── bvif-samples/
+│   ├── 0.workshop/
+│   ├── 1.bvif-scenarios/
+│   └── 2.bvif-docs/
+├── docs/
+└── README.md</pre></div>
+        </div>
+
+        <!-- 1.3a -->
+        <div class="step-panel" data-step="1.3a">
+          <h3>1.3 · Option A — Clone via git</h3>
+          <p class="step-lede">In a terminal, navigate to your workspace folder and run:</p>
+          <div class="code-block"><button class="copy-btn" type="button">Copy</button><pre>cd ~/workspace-bvif
+git clone git@ssh.gitlab.aws.dev:maumunoz/kiro_for_bvif.git /tmp/kiro_for_bvif
+cp -R /tmp/kiro_for_bvif/.kiro /tmp/kiro_for_bvif/bvif-samples /tmp/kiro_for_bvif/docs /tmp/kiro_for_bvif/README.md .
+rm -rf /tmp/kiro_for_bvif</pre></div>
+          <div class="step-note">Copies <code>.kiro/</code>, <code>bvif-samples/</code>, <code>docs/</code>, and <code>README.md</code> into your workspace. The final <code>rm</code> is just cleanup.</div>
+        </div>
+
+        <!-- 1.3b -->
+        <div class="step-panel" data-step="1.3b">
+          <h3>1.3 · Option B — Download the source archive</h3>
+          <p class="step-lede">Open the GitLab project page, click <strong>Code</strong>, and choose <strong>Download source code → zip</strong>.</p>
+          <ul>
+            <li>Project page: <a href="https://gitlab.aws.dev/maumunoz/kiro_for_bvif" target="_blank">gitlab.aws.dev/maumunoz/kiro_for_bvif</a></li>
+            <li>Unzip the archive.</li>
+            <li>Copy <code>.kiro/</code>, <code>bvif-samples/</code>, <code>docs/</code>, and <code>README.md</code> from the extracted contents into your workspace folder.</li>
+          </ul>
+          <img class="step-image" src="../../docs/images/gitlab-download-files.png" alt="GitLab Code dropdown showing Download source code → zip" />
+        </div>
+
+        <!-- 1.4 -->
+        <div class="step-panel" data-step="1.4">
+          <h3>1.4 Open the workspace in Kiro</h3>
+          <p class="step-lede">In Kiro: <strong>File → Open Folder…</strong> and select the workspace root.</p>
+          <p class="step-lede" style="font-size: 16px;">Verify the steering rule loaded:</p>
+          <ul>
+            <li>Click the <strong>Kiro icon</strong> in the activity bar.</li>
+            <li>Expand <strong>Agent steering &amp; skills</strong>.</li>
+            <li>Under <strong>Workspace</strong>, you should see <strong>core-workflow</strong>.</li>
+          </ul>
+          <img class="step-image" src="../../docs/images/kiro-steering-doc.png" alt="Kiro panel showing the core-workflow entry under Agent steering & skills → Workspace" style="max-width: 50%;" />
+        </div>
+
+        <!-- 2.1 -->
+        <div class="step-panel" data-step="2.1">
+          <h3>2.1 Pick a scenario</h3>
+          <p class="step-lede">Browse the available fictitious scenarios and choose one.</p>
+          <ul>
+            <li><strong>Scenarios folder</strong> — <a href="https://gitlab.aws.dev/maumunoz/kiro_for_bvif/-/tree/main/bvif-samples/1.bvif-scenarios" target="_blank">on GitLab</a> · <a href="../1.bvif-scenarios/" target="_blank">on your local machine</a></li>
+            <li><strong>Scenarios overview</strong> (Manufacturing vs. Sport club comparison) — <a href="https://gitlab.aws.dev/maumunoz/kiro_for_bvif/-/blob/main/bvif-samples/1.bvif-scenarios/README.md" target="_blank">on GitLab</a> · <a href="../1.bvif-scenarios/README.md" target="_blank">on your local machine</a></li>
+          </ul>
+          <div class="step-note">Manufacturing = single, technically richer initiative (cost avoidance). Sport club = three lighter initiatives (revenue uplift) — pick one or compare several.</div>
+        </div>
+
+        <!-- 2.2 -->
+        <div class="step-panel" data-step="2.2">
+          <h3>2.2 Read the storyline</h3>
+          <p class="step-lede">Open the storyline file inside the scenario folder you picked and skim it.</p>
+          <ul>
+            <li>Familiarize yourself with the customer, the context, and the proposed AI initiative.</li>
+            <li>You will play the role of a representative of the customer when answering Kiro's questions.</li>
+          </ul>
+          <div class="step-note">
+            <strong>How to open it:</strong> for <code>.md</code> files, open the file in Kiro and use its built-in markdown preview (<code>Cmd+K V</code> / <code>Ctrl+K V</code> for split preview, or <code>Cmd+Shift+V</code> / <code>Ctrl+Shift+V</code> for full preview) to read it with formatting. For other formats, use the corresponding native reader — Word for <code>.docx</code>, a PDF viewer for <code>.pdf</code>, any text editor for <code>.txt</code>.
+          </div>
+        </div>
+
+        <!-- 2.3 -->
+        <div class="step-panel" data-step="2.3">
+          <h3>2.3 Start a new session in Kiro</h3>
+          <p class="step-lede">With the workspace open, open a new chat session and switch to <strong>Vibe mode</strong>. Enter:</p>
+          <div class="code-block"><button class="copy-btn" type="button">Copy</button><pre>Run a business value identification for &lt;title of your AI initiative&gt;.</pre></div>
+          <p class="step-lede" style="font-size: 16px;">For example: <em>Run a business value identification for the initiative: predictive maintenance using AI.</em></p>
+          <img class="step-image" src="../../docs/images/kiro-vibe-mode.png" alt="Kiro IDE showing a new session in Vibe mode" />
+          <div class="step-note">This prompt only kicks off the process and names the initiative. Kiro will request the rest of the details in the next stages.</div>
+        </div>
+
+        <!-- 2.4 -->
+        <div class="step-panel" data-step="2.4">
+          <h3>2.4 Follow the prompts in Kiro</h3>
+          <p class="step-lede">The agent walks through the 7 BVIF stages, pausing for your approval between each. Answer using the storyline as your source of truth.</p>
+          <ul>
+            <li>Every interaction writes assets to <code>bvif-docs/&lt;NN&gt;-&lt;slug&gt;-&lt;yyyymm&gt;/</code> at the workspace root.</li>
+            <li>You can close and reopen the workspace at any point — the agent resumes where it left off.</li>
+          </ul>
+          <div class="step-note"><strong>Done when:</strong> all stage subfolders from <code>00-session-setup/</code> through <code>07-final-results/</code> are populated and <code>07-final-results/final-results.md</code> has been generated.</div>
+        </div>
+
+        <!-- 2.4a -->
+        <div class="step-panel" data-step="2.4a">
+          <h3>2.4 · Monitor progress</h3>
+          <p class="step-lede">Two files inside your initiative folder track everything:</p>
+          <ul>
+            <li><code>bvif-state.md</code> — which stages are complete.</li>
+            <li><code>audit.md</code> — full log of every interaction with the agent.</li>
+          </ul>
+          <div class="step-note">Open these in a side pane in Kiro while you work — they update live.</div>
+        </div>
+
+        <!-- 2.4b -->
+        <div class="step-panel" data-step="2.4b">
+          <h3>2.4 · Note on Stage 5 (Data Collection)</h3>
+          <p class="step-lede">This is the only stage where Kiro may ask you to share files. Two options — they can be mixed.</p>
+          <div class="step-option-grid">
+            <div class="step-option">
+              <div class="lbl">Option 1</div>
+              <div class="ttl">Answer inline</div>
+              <div style="font-size: 14px; color: var(--ink-dim); line-height: 1.5;">Kiro creates a question file with one entry per data point.</div>
+            </div>
+            <div class="step-option">
+              <div class="lbl">Option 2</div>
+              <div class="ttl">Upload documents</div>
+              <div style="font-size: 14px; color: var(--ink-dim); line-height: 1.5;">Kiro creates <code>05-data-collection/uploads/</code>, reads the files you drop in, and extracts data points with a <strong>source fidelity</strong> label (High / Medium / Low).</div>
+            </div>
+          </div>
+          <div class="step-note">Plain-text or markdown only. Keep binaries (PDFs, spreadsheets, images) and anything containing secrets out of <code>uploads/</code> — transcribe the relevant numbers first.</div>
+        </div>
+
+        <!-- 3.1 -->
+        <div class="step-panel" data-step="3.1">
+          <h3>3.1 Walk through your final BVIF deliverable</h3>
+          <p class="step-lede">In your assigned time slot (typically 5 minutes per participant), walk the room through:</p>
+          <ul>
+            <li>The initiative definition.</li>
+            <li>The metrics you selected.</li>
+            <li>The feasibility calls you made.</li>
+            <li>The data you collected.</li>
+            <li>The final annualized business value.</li>
+          </ul>
+        </div>
+
+        <!-- 3.2 -->
+        <div class="step-panel" data-step="3.2">
+          <h3>3.2 Share your top 2 pieces of feedback</h3>
+          <p class="step-lede">From the exercise — what worked well, what felt confusing, what you would change.</p>
+          <div class="step-note">This is the most valuable teaching input the facilitator and other participants can receive. Label each piece of feedback as <strong>process</strong> or <strong>execution</strong>.</div>
+        </div>
+
+        <!-- 3.3 -->
+        <div class="step-panel" data-step="3.3">
+          <h3>3.3 Presenter selection — "The Wheel"</h3>
+          <p class="step-lede">Presenters are picked at random using <a href="https://github.com/aws/aws-ops-wheel" target="_blank">The Wheel</a>. The facilitator adds every participant's name to the wheel and spins it.</p>
+          <img class="step-image" src="../../docs/images/aws-ops-wheel.png" alt="The Wheel — random participant selection" style="max-width: 480px;" />
+          <div class="step-note">Differences between presentations are not bugs — they show how the same storyline can legitimately produce different outputs depending on the judgment calls made along the way.</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+</div><!-- /deck-internal -->
+
+<div class="deck" id="deck">
+
+<!-- SLIDE 1: Title -->
+<section class="slide active" data-notes="Welcome to the BVIF workshop. Today you will learn how to turn an AI initiative into a quantified business value evaluation. Keep this short — about 1 minute. Press N to open presenter notes, arrow keys to navigate, F for fullscreen.">
+  <div class="title-hero">
+    <span class="chip">AWS · AI Business Value Identification Framework</span>
+    <h1 style="margin-top:18px;">BVIF<br/>Workshop</h1>
+    <p class="sub">From a plain-language AI idea to a quantified, evidence-based business case — in seven steps.</p>
+    <div style="margin-top:40px; display:flex; gap:12px; align-items:center; color: var(--ink-dim); font-size:14px;">
+      <span>Use</span>
+      <span class="pill">→</span><span>Next</span>
+      <span class="pill">←</span><span>Previous</span>
+      <span class="pill">N</span><span>Presenter notes</span>
+      <span class="pill">F</span><span>Fullscreen</span>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 2: Meet the personas -->
+<section class="slide" data-notes="Meet Precision Furniture Inc. — a B2B furniture manufacturer with three US production sites (Ohio, North Carolina, Texas), 450 employees, ~$180M revenue, and 85% automated production. We focus on two executives who drive this initiative: Bob Hartman (CEO) — 20 years in B2B manufacturing, MBA, joined 2018. He sets strategy, owns capital allocation over $500K, and asks one threshold question: 'Will this make us more reliable for our customers, and does the return justify the risk?' Maria Delgado (COO) — 15 years in manufacturing operations, mechanical engineer, Lean Six Sigma Black Belt. She runs all three plants, owns uptime and on-time delivery, and is the primary sponsor of the predictive maintenance initiative. Frame the rest of the talk around them: Bob needs a credible ROI story, Maria needs the operational case to stand up.">
+  <div class="company-banner">
+    <span class="dot"></span>
+    <div style="flex:1">
+      <div style="font-weight:700; letter-spacing:0.04em;">Precision Furniture Inc.</div>
+      <div class="muted" style="font-size:14px;">B2B furniture manufacturer · 3 US sites · 450 employees · ~$180M revenue · 85% automated</div>
+    </div>
+    <span class="pill">Meet the team</span>
+  </div>
+
+  <div class="personas">
+    <div class="persona">
+      <div class="avatar">
+        <!-- Bob icon -->
+        <svg width="110" height="110" viewBox="0 0 110 110" aria-hidden="true">
+          <circle cx="55" cy="42" r="22" fill="#ffd166"/>
+          <path d="M20 95 C 20 70, 90 70, 90 95 Z" fill="#1f9bff"/>
+          <rect x="40" y="60" width="30" height="10" fill="#0b1e3f"/>
+        </svg>
+      </div>
+      <h2>Bob Hartman</h2>
+      <div class="role">Chief Executive Officer</div>
+      <p class="tag">Strategic direction · Capital allocation · Board & top accounts. “Will this make us more reliable, and does the return justify the risk?”</p>
+    </div>
+
+    <div class="persona">
+      <div class="avatar">
+        <!-- Maria icon -->
+        <svg width="110" height="110" viewBox="0 0 110 110" aria-hidden="true">
+          <circle cx="55" cy="42" r="22" fill="#ff9f7a"/>
+          <path d="M18 95 C 18 70, 92 70, 92 95 Z" fill="#ff9900"/>
+          <path d="M38 38 Q 55 18, 72 38" stroke="#3a1a00" stroke-width="6" fill="none"/>
+        </svg>
+      </div>
+      <h2>Maria Delgado</h2>
+      <div class="role">Chief Operating Officer</div>
+      <p class="tag">Runs 3 plants · Owns uptime & OTD · Sponsor of the predictive-maintenance initiative. Building the business case for 2026.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 3: Results -->
+<section class="slide" data-notes="This is what BVIF produced for Precision Furniture. The initiative started as a plain-language idea — predictive maintenance using machine learning on sensor data — and BVIF converted it into $9.36M in quantified annual business value. Breakdown: (1) Recovered production capacity — $6.46M/year from cutting unplanned downtime in half (2.8% → 1.4%), recovering 162 hours per quarter at $9,971 lost contribution margin per hour. (2) Maintenance cost reduction — $1.73M/year from a 20% reduction in maintenance cost per unit ($12.00 → $9.60) across 720,000 annual units. (3) Delivery penalty avoidance — $1.17M/year from a 5-point improvement in on-time delivery (90% → 95%), eliminating 117 late orders per quarter at $2,500 per penalty. Every figure is conservative and validated against peer case studies and industry benchmarks. Beyond the dollars, the initiative protects customer relationships, defends the mid-market position, and improves operational resilience. Emphasize: this level of rigor came from one structured workshop with the agent, grounded only in the business context the team provided.">
+  <span class="eyebrow">Result · BVIF applied to Precision Furniture</span>
+  <h2 class="headline">$9.36M in quantified annual business value</h2>
+
+  <div class="row" style="flex:1; align-items:stretch;">
+    <div class="col" style="flex: 1;">
+      <div class="card" style="height:100%;">
+        <span class="pill">Start — The idea</span>
+        <div class="quote-card" style="margin-top:18px;">
+          Implement a predictive maintenance system powered by machine learning that analyzes equipment sensor data from our automated lines — predicting failures before they happen and optimizing maintenance across our three facilities.
+        </div>
+        <ul class="bullets" style="margin-top:14px;">
+          <li>Only business context — no technical detail</li>
+          <li>Conservative targets, peer-validated</li>
+          <li>Traceable end-to-end</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="col" style="flex: 1.2;">
+      <div class="card" style="height:100%; display:flex; flex-direction:column;">
+        <span class="pill">End — Quantified business value</span>
+        <div style="display:flex; align-items:baseline; gap:16px; margin-top:14px;">
+          <span class="big-value">$9.36M</span>
+          <span class="muted">/year</span>
+        </div>
+        <div class="value-strip">
+          <div class="mini">
+            <div class="lbl">Recovered capacity</div>
+            <div class="val">$6.46M</div>
+          </div>
+          <div class="mini">
+            <div class="lbl">Maintenance cost ↓</div>
+            <div class="val">$1.73M</div>
+          </div>
+          <div class="mini">
+            <div class="lbl">Penalty avoidance</div>
+            <div class="val">$1.17M</div>
+          </div>
+        </div>
+
+        <div style="margin-top:22px;">
+          <!-- Simple bar chart SVG -->
+          <svg viewBox="0 0 600 160" class="diagram" aria-hidden="true">
+            <defs>
+              <linearGradient id="g1" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stop-color="#ffd166"/><stop offset="100%" stop-color="#ff9900"/>
+              </linearGradient>
+            </defs>
+            <g font-family="inherit" font-size="11" fill="#c6d1e3">
+              <text x="0" y="150">Capacity</text>
+              <text x="210" y="150">Maintenance</text>
+              <text x="410" y="150">Penalties</text>
+            </g>
+            <rect x="0"   y="20"  width="160" height="115" rx="6" fill="url(#g1)"/>
+            <rect x="210" y="88"  width="160" height="47"  rx="6" fill="url(#g1)" opacity="0.85"/>
+            <rect x="410" y="104" width="160" height="31"  rx="6" fill="url(#g1)" opacity="0.7"/>
+            <g font-family="inherit" font-size="13" fill="#0b1e3f" font-weight="700">
+              <text x="80"  y="80"  text-anchor="middle">$6.46M</text>
+              <text x="290" y="118" text-anchor="middle">$1.73M</text>
+              <text x="490" y="128" text-anchor="middle">$1.17M</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 4: What is BVIF? -->
+<section class="slide" data-notes="Now that you have seen what BVIF can do, let's explain what it is. BVIF is a systematic framework for turning an AI initiative into a quantified business value evaluation. Starting from a plain-language description of the initiative, it guides you — through an agent — through defining the right metrics, assessing how feasibly each can be measured, collecting data, and calculating an annualized business value that is grounded in evidence and traceable end-to-end. It is organized into three phases and seven stages. Discovery (blue): stages 1–2 define the initiative and map it to business value categories. Metrics (green): stages 3–4 identify candidate metrics, assess feasibility (F1/F2/F3), and adjust based on data availability. Quantification (orange): stages 5–7 collect data, calculate the annualized value, and produce the final results document. Every stage ends with an approval gate — the agent never advances without your explicit OK — and every user interaction and answer is captured in sequentially numbered files, so nothing gets lost.">
+  <span class="eyebrow">What is BVIF?</span>
+  <h2 class="headline">From a plain-language AI idea to quantified value</h2>
+
+  <p style="max-width:1100px; font-size:18px; color:var(--ink); margin-bottom: 18px;">
+    A systematic framework that guides you through defining metrics, assessing feasibility,
+    collecting data, and calculating annualized value — <span style="color:var(--accent); font-weight:700;">grounded in evidence, traceable end-to-end.</span>
+  </p>
+
+  <div class="phase-band">
+    <div class="phase discover">🔵  Discovery</div>
+    <div class="phase metrics">🟢  Metrics</div>
+    <div class="phase quant">🟡  Quantification</div>
+  </div>
+
+  <div class="steps">
+    <div class="step" style="border-color: rgba(31,155,255,0.5);"><div class="num">1</div><div class="lbl">Define the initiative</div><div style="font-size:11px; color:var(--accent); margin-top:6px;">← Start — The idea</div></div>
+    <div class="step"><div class="num">2</div><div class="lbl">Extract business value categories</div></div>
+    <div class="step"><div class="num">3</div><div class="lbl">Identify metrics</div></div>
+    <div class="step"><div class="num">4</div><div class="lbl">Adjust for feasibility</div></div>
+    <div class="step"><div class="num">5</div><div class="lbl">Collect data</div></div>
+    <div class="step"><div class="num">6</div><div class="lbl">Calculate business value</div></div>
+    <div class="step" style="border-color: rgba(255,153,0,0.5);"><div class="num">7</div><div class="lbl">Final results</div><div style="font-size:11px; color:var(--accent); margin-top:6px;">End — Quantified business value →</div></div>
+  </div>
+
+  <div style="margin-top:28px; display:flex; gap:14px; justify-content:center;">
+    <span class="chip" style="background: rgba(31,155,255,0.12); color:#7ec3ff; border-color: rgba(31,155,255,0.35);">Approval gates at every stage</span>
+    <span class="chip" style="background: rgba(38,194,129,0.12); color:#6be0a7; border-color: rgba(38,194,129,0.35);">Full audit trail</span>
+    <span class="chip">Works from business context alone</span>
+  </div>
+</section>
+
+<!-- SLIDE 5: What you will do today -->
+<section class="slide" data-notes="Today you will run BVIF end-to-end for Precision Furniture — one of the fictitious scenarios available in the bvif-scenarios folder. This is a B2B furniture manufacturer we just introduced. You will use Kiro and the storyline document we have prepared. Work in teams of 1 to 3. You do not need to be a Precision Furniture expert — the storyline has everything you need, and the agent will ask for context as it goes. The three objectives: (1) Capture your feedback so we can improve BVIF. (2) Make you familiar with the process so you can run it live with a customer. (3) Prepare you to deliver the initiative for customers. Be yourselves — push back on the agent, challenge its suggestions, test edge cases. That is exactly the kind of feedback we need.">
+  <span class="eyebrow">Workshop · Part 1</span>
+  <h2 class="headline">What you will do today</h2>
+
+  <div class="row" style="gap:28px; flex:1; align-items:stretch;">
+    <div class="col card" style="flex:1.2;">
+      <span class="pill">The exercise</span>
+      <h3 style="color:var(--ink); font-size:26px; margin-top:10px;">Run BVIF for Precision Furniture</h3>
+      <ul class="bullets">
+        <li>Use Kiro + the prepared storyline</li>
+        <li>Work in small teams (1–3 people)</li>
+        <li>Present your results and lessons learned</li>
+      </ul>
+    </div>
+
+    <div class="col" style="flex:1;">
+      <div class="obj-grid" style="grid-template-columns: 1fr; gap:14px;">
+        <div class="obj">
+          <svg class="icon" viewBox="0 0 56 56" aria-hidden="true">
+            <circle cx="28" cy="28" r="24" fill="none" stroke="#ff9900" stroke-width="3"/>
+            <path d="M18 30 l7 7 l13 -17" fill="none" stroke="#ff9900" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <h3>Capture your feedback</h3>
+          <p>What works, what does not, what is missing.</p>
+        </div>
+        <div class="obj">
+          <svg class="icon" viewBox="0 0 56 56" aria-hidden="true">
+            <rect x="8" y="10" width="40" height="32" rx="4" fill="none" stroke="#1f9bff" stroke-width="3"/>
+            <path d="M16 22 h24 M16 30 h18" stroke="#1f9bff" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+          <h3>Get familiar with the process</h3>
+          <p>Hands-on, not a tutorial.</p>
+        </div>
+        <div class="obj">
+          <svg class="icon" viewBox="0 0 56 56" aria-hidden="true">
+            <path d="M28 8 l22 12 v16 l-22 12 l-22 -12 v-16 z" fill="none" stroke="#26c281" stroke-width="3"/>
+            <circle cx="28" cy="28" r="6" fill="#26c281"/>
+          </svg>
+          <h3>Prepare to deliver with customers</h3>
+          <p>So you can run this live.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 6: Pre-work -->
+<section class="slide" data-notes="Before we start the hands-on portion, there are two things each team needs to do. Business side: read the Precision Furniture storyline from bvif-samples/bvif-scenarios/scenario_A-Manufacturing-company/. It is a few pages long and covers the company, the executives, the operational metrics, and the initiative. Hint — use AI (any assistant you prefer) to query the document rather than reading it cover to cover. Tech side: clone the repository from GitLab AWS. That repo has the Kiro steering files, the rule details, and the sample run you saw earlier. Read the README — it explains how to open the workspace in Kiro and what to expect. You have 30 minutes for pre-work. If you hit snags, flag us — better to resolve them now than during the workshop itself.">
+  <span class="eyebrow">Workshop · Part 2</span>
+  <h2 class="headline">Pre-work</h2>
+
+  <div class="row" style="gap:24px; flex:1; align-items:stretch;">
+    <div class="col card">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:10px;">
+        <svg width="36" height="36" viewBox="0 0 36 36"><circle cx="18" cy="18" r="17" fill="none" stroke="#ff9900" stroke-width="2"/><text x="18" y="23" text-anchor="middle" fill="#ff9900" font-weight="800" font-size="16">B</text></svg>
+        <h3 style="color:var(--ink); font-size:22px;">Business side</h3>
+      </div>
+      <ul class="bullets">
+        <li>Read the Precision Furniture storyline</li>
+        <li>Use AI to query the document — do not read it cover to cover</li>
+        <li>Focus on: company profile, execs, metrics, the initiative</li>
+      </ul>
+    </div>
+
+    <div class="col card">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:10px;">
+        <svg width="36" height="36" viewBox="0 0 36 36"><circle cx="18" cy="18" r="17" fill="none" stroke="#1f9bff" stroke-width="2"/><text x="18" y="23" text-anchor="middle" fill="#1f9bff" font-weight="800" font-size="16">T</text></svg>
+        <h3 style="color:var(--ink); font-size:22px;">Tech side</h3>
+      </div>
+      <ul class="bullets">
+        <li>Clone: <span style="color:var(--accent); font-family: ui-monospace, monospace;">gitlab.aws.dev/maumunoz/kiro_for_bvif</span></li>
+        <li>Read the README</li>
+        <li>Open the workspace in Kiro</li>
+      </ul>
+    </div>
+
+    <div class="col card" style="flex:0.6;">
+      <div class="pill" style="margin-bottom:10px;">Team size</div>
+      <div style="font-size:72px; font-weight:800; color:var(--ink);">1–3</div>
+      <p>people per team. Mixed backgrounds encouraged.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 7: Run the session -->
+<section class="slide" data-notes="How to run the BVIF session. Open your Kiro workspace and, in the chat, type: 'Run a business value identification for [explain the AI initiative]'. Replace the brackets with the initiative you are evaluating — for the workshop, use the Precision Furniture predictive maintenance idea. From there, follow the guidance Kiro gives you. A few practical notes. First: provide your answers in files, not in chat. Kiro will create sequentially numbered interaction files (like 01-session-setup-questions.md) in each stage folder. Open them, answer inline, save, and tell Kiro you are done. Push back when Kiro gets something wrong — this is a conversation, not a form. Second: every artifact is a markdown file. Use Kiro's built-in preview (the eye icon or Cmd/Ctrl+Shift+V) for readability. Third: in Stage 5 (data collection), you can either answer inline or upload a file. If you upload, put it in the `uploads/` folder under stage 05. For the workshop you can build your own data file from the storyline — try both paths with different teams. Finally: if Kiro offers to move this into Spec mode at any point, politely decline. BVIF has its own workflow.">
+  <span class="eyebrow">Workshop · Part 3</span>
+  <h2 class="headline">Run the BVIF session</h2>
+
+  <div class="card" style="margin-bottom: 18px;">
+    <div style="display:flex; align-items:center; gap:14px;">
+      <span class="pill">In Kiro chat</span>
+      <code style="flex:1; background: rgba(0,0,0,0.3); padding: 12px 16px; border-radius: 10px; font-size: 16px; color: var(--accent);">
+        Run a business value identification for my Predictive Maintenance using AI initiative
+      </code>
+    </div>
+  </div>
+
+  <div class="row" style="gap:18px; flex:1;">
+    <div class="col card">
+      <span class="pill">Tip 1</span>
+      <h3 style="color:var(--ink); font-size:18px; margin-top:10px;">Answers in files, not in chat</h3>
+      <p style="font-size:14px;">Kiro opens numbered .md files. Fill them in, save, confirm. Push back when needed.</p>
+    </div>
+    <div class="col card">
+      <span class="pill">Tip 2</span>
+      <h3 style="color:var(--ink); font-size:18px; margin-top:10px;">Use Kiro's markdown preview</h3>
+      <p style="font-size:14px;">Every artifact is .md — open the preview pane for readability.</p>
+    </div>
+    <div class="col card">
+      <span class="pill">Tip 3</span>
+      <h3 style="color:var(--ink); font-size:18px; margin-top:10px;">Stage 5 — inline or upload</h3>
+      <p style="font-size:14px;">Answer questions inline, or drop a data file into <code style="color:var(--accent);">uploads/</code>.</p>
+    </div>
+    <div class="col card" style="background: rgba(255,107,107,0.08); border-color: rgba(255,107,107,0.35);">
+      <span class="pill" style="background: rgba(255,107,107,0.2); color: #ff9a9a; border-color: rgba(255,107,107,0.4);">Watch out</span>
+      <h3 style="color:var(--ink); font-size:18px; margin-top:10px;">If Kiro suggests Spec mode</h3>
+      <p style="font-size:14px;">Politely decline — BVIF has its own workflow.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 8: Presentation -->
+<section class="slide" data-notes="When the workshop portion ends, each team presents for 15 minutes. Five minutes on BVIF results — the business value total, the key drivers, any interesting decisions in metrics adjustment or data collection. Five minutes on lessons learned and feedback — what surprised you, what felt clunky, what would you change. Five minutes on Q&A. Keep it informal. We are not grading presentations — we are collecting insights that will improve the framework and the agent.">
+  <span class="eyebrow">Workshop · Part 4</span>
+  <h2 class="headline">Your presentation · 15 minutes</h2>
+
+  <div style="flex:1; display:flex; flex-direction:column; justify-content:center; max-width:900px; margin:0 auto; width:100%;">
+
+    <div style="display:flex; gap:16px; margin-bottom:14px;">
+      <div style="flex:1;" class="card">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <div>
+            <div class="pill">Part 1</div>
+            <h3 style="color:var(--ink); font-size:22px; margin-top:8px;">BVIF results</h3>
+          </div>
+          <div style="font-size:40px; font-weight:800; color: var(--accent);">5<span style="font-size:16px; color:var(--ink-dim); font-weight:500;">min</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:16px; margin-bottom:14px;">
+      <div style="flex:1;" class="card">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <div>
+            <div class="pill">Part 2</div>
+            <h3 style="color:var(--ink); font-size:22px; margin-top:8px;">Lessons learned & feedback</h3>
+          </div>
+          <div style="font-size:40px; font-weight:800; color: var(--accent);">5<span style="font-size:16px; color:var(--ink-dim); font-weight:500;">min</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:16px;">
+      <div style="flex:1;" class="card">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <div>
+            <div class="pill">Part 3</div>
+            <h3 style="color:var(--ink); font-size:22px; margin-top:8px;">Q&amp;A</h3>
+          </div>
+          <div style="font-size:40px; font-weight:800; color: var(--accent);">5<span style="font-size:16px; color:var(--ink-dim); font-weight:500;">min</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- SLIDE 9: Agenda -->
+<section class="slide" data-notes="Here is the full agenda for the day. Intro — this session — 30 minutes. Pre-work — 30 minutes. Workshop — the hands-on BVIF run — 2 hours. Presentations — teams share out — 60 minutes. Wrap-up — consolidate feedback and next steps — 30 minutes. Total: roughly half a day. The workshop itself is the longest block and where most of the learning happens. Pacing note: if your team is moving faster than expected through BVIF, slow down and deliberately test edge cases (bad data, missing metrics, ambiguous initiatives). If you are moving slower, ask for help — every team should reach Stage 7.">
+  <span class="eyebrow">Today</span>
+  <h2 class="headline" style="text-align:center;">Agenda</h2>
+
+  <div class="agenda" style="flex:1; align-content:center;">
+    <div class="agenda-row"><div class="n">1</div><div class="t">Intro <span class="muted">(this session)</span></div><div class="d">30 min</div></div>
+    <div class="agenda-row"><div class="n">2</div><div class="t">Pre-work</div><div class="d">30 min</div></div>
+    <div class="agenda-row"><div class="n">3</div><div class="t">Workshop · hands-on BVIF</div><div class="d">2 h</div></div>
+    <div class="agenda-row"><div class="n">4</div><div class="t">Team presentations</div><div class="d">60 min</div></div>
+    <div class="agenda-row"><div class="n">5</div><div class="t">Wrap-up</div><div class="d">30 min</div></div>
+  </div>
+</section>
+
+<!-- SLIDE 10: Thank you -->
+<section class="slide" data-notes="Thank you. Questions before we start pre-work?">
+  <div class="thanks">
+    <h1>Thank you</h1>
+    <p>Questions?</p>
+    <div style="margin-top:36px; display:flex; gap:12px;">
+      <span class="chip">Have fun</span>
+      <span class="chip">Share feedback</span>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 11: Appendix — How steering works -->
+<section class="slide" data-notes="Appendix A — how the steering works. You do not need this to run BVIF, but it helps to understand what is happening under the hood. The file `.kiro/steering/bvif-rules/core-workflow.md` is loaded as an always-included steering rule. It defines the BVIF phases and stages and tells the agent to load supporting files from `.kiro/bvif-rule-details/` on demand. Outputs go into a `bvif-docs/` folder at the workspace root. Each initiative gets its own subfolder — the agent asks you for the initiative name, builds a short slug, and creates `bvif-docs/<NN>-<slug>-<yyyymm>/`. All artifacts for that initiative — the state file, the audit log, every stage subfolder — live inside that per-initiative folder. `<NN>` is a zero-padded counter starting at 01 that increments with each new initiative. `<yyyymm>` is the year and month when the initiative was started. This means you can run multiple BVIF sessions in the same workspace without artifacts colliding.">
+  <span class="eyebrow">Appendix A</span>
+  <h2 class="headline">How the steering works</h2>
+
+  <div class="row" style="flex:1; gap:22px; align-items:stretch;">
+    <div class="col card">
+      <span class="pill">Steering rule</span>
+      <h3 style="color:var(--ink); font-size:18px; margin-top:8px;">.kiro/steering/bvif-rules/core-workflow.md</h3>
+      <p style="font-size:14px;">Always-included. Defines the 7-stage workflow and tells the agent when to load supporting files.</p>
+
+      <div style="margin-top:14px;">
+        <span class="pill" style="background: rgba(38,194,129,0.15); color:#6be0a7; border-color: rgba(38,194,129,0.35);">Loaded on demand</span>
+        <h3 style="color:var(--ink); font-size:18px; margin-top:8px;">.kiro/bvif-rule-details/</h3>
+        <p style="font-size:14px;">Stage-specific guidance, question templates, process overview.</p>
+      </div>
+    </div>
+
+    <div class="col card" style="flex:1.2;">
+      <span class="pill">Output structure</span>
+      <pre style="margin-top:10px; font-size:12.5px; line-height:1.6; color: var(--ink-dim); background: rgba(0,0,0,0.25); padding: 16px; border-radius: 10px; overflow:auto;">
+bvif-docs/
+└── <span style="color:var(--accent);">01-customer-churn-predictor-202604/</span>
+    ├── 00-session-setup/
+    ├── 01-initiative-definition/
+    ├── 02-business-value-mapping/
+    ├── 03-metrics-identification/
+    ├── 04-metrics-adjustment/
+    ├── 05-data-collection/
+    │   └── uploads/
+    ├── 06-business-value-calculation/
+    ├── 07-final-results/
+    ├── bvif-state.md
+    └── audit.md</pre>
+      <p style="font-size:13px; margin-top:10px;">
+        <span style="color:var(--accent); font-weight:700;">&lt;NN&gt;</span> = running counter ·
+        <span style="color:var(--accent); font-weight:700;">&lt;slug&gt;</span> = short initiative name ·
+        <span style="color:var(--accent); font-weight:700;">&lt;yyyymm&gt;</span> = start date
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 12: Appendix — BVIF scenarios & samples -->
+<section class="slide" data-notes="Appendix B — BVIF scenarios and samples. The `bvif-samples/` folder in the repo is organized to hold multiple scenarios over time. Each scenario lives in its own subfolder under `bvif-samples/bvif-scenarios/`. Today we have Scenario A — Precision Furniture Inc. — but additional scenarios may be added in the future. The `bvif-samples/bvif-docs/` folder contains the reference run artifacts (the completed output) for Scenario A. It shows every interaction file, every approval, the audit log, and the final results document — the same document that produced the $9.36M result we saw earlier. Use it as a reference only. Your execution will be different, and that is okay. We actively want to see different experiences and different results — that is how we validate the framework across teams and styles. Do not treat it as an answer key.">
+  <span class="eyebrow">Appendix B</span>
+  <h2 class="headline">BVIF scenarios &amp; samples</h2>
+
+  <div class="row" style="flex:1; gap:22px; align-items:stretch;">
+    <div class="col card">
+      <span class="pill">Where scenarios live</span>
+      <h3 style="color:var(--ink); font-size:20px; margin-top:8px; font-family: ui-monospace, monospace; color: var(--accent);">bvif-samples/bvif-scenarios/</h3>
+      <ul class="bullets" style="margin-top:10px;">
+        <li>One folder per scenario (storyline + README)</li>
+        <li>Currently: <strong>Scenario A</strong> — Precision Furniture Inc.</li>
+        <li>More scenarios may be added over time</li>
+      </ul>
+      <span class="pill" style="margin-top:18px;">Reference run</span>
+      <h3 style="color:var(--ink); font-size:20px; margin-top:8px; font-family: ui-monospace, monospace; color: var(--accent);">bvif-samples/bvif-docs/</h3>
+      <ul class="bullets" style="margin-top:10px;">
+        <li>Complete BVIF output for Scenario A → $9.36M</li>
+        <li>Every interaction, approval, and artifact</li>
+      </ul>
+    </div>
+
+    <div class="col card" style="background: rgba(255,153,0,0.08); border-color: rgba(255,153,0,0.35);">
+      <span class="pill">For reference only</span>
+      <h3 style="color:var(--ink); font-size:22px; margin-top:10px;">Your execution will be different</h3>
+      <p>And that is exactly what we want.</p>
+      <ul class="bullets" style="margin-top:10px;">
+        <li>Different teams, different choices</li>
+        <li>Different metrics, different totals</li>
+        <li>This validates BVIF across experiences</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+</div><!-- /deck -->
+
+<div class="notes-panel" id="notes">
+  <h4>Presenter notes</h4>
+  <div id="notes-content"></div>
+</div>
+
+<div class="counter"><span id="curr">1</span> / <span id="total">1</span></div>
+<div class="controls">
+  <button class="btn" id="prev">← Prev</button>
+  <button class="btn" id="next">Next →</button>
+  <button class="btn" id="notesBtn">Notes (N)</button>
+  <button class="btn" id="fsBtn">Fullscreen (F)</button>
+</div>
+<div class="progress"><span id="bar"></span></div>
+
+<script>
+  (function () {
+    const body = document.body;
+    const backBtn = document.getElementById('backBtn');
+    const curr  = document.getElementById('curr');
+    const tot   = document.getElementById('total');
+    const bar   = document.getElementById('bar');
+    const notes = document.getElementById('notes');
+    const notesContent = document.getElementById('notes-content');
+
+    // ---------- Decks (one per path) ----------
+    const decks = {
+      general:  { slides: Array.from(document.querySelectorAll('#deck .slide')),          i: 0 },
+      internal: { slides: Array.from(document.querySelectorAll('#deck-internal .slide')), i: 0 },
+    };
+
+    function activeDeck() {
+      return decks[body.dataset.route] || null;
+    }
+
+    function render() {
+      const deck = activeDeck();
+      if (!deck) return;
+      const total = deck.slides.length;
+      deck.slides.forEach((s, idx) => s.classList.toggle('active', idx === deck.i));
+      curr.textContent = deck.i + 1;
+      tot.textContent  = total;
+      bar.style.width  = ((deck.i + 1) / total * 100) + '%';
+      const n = deck.slides[deck.i] && deck.slides[deck.i].dataset.notes || '';
+      notesContent.innerHTML = n
+        ? '<p>' + n.replace(/\n/g, '</p><p>') + '</p>'
+        : '<p><em>No notes for this slide.</em></p>';
+    }
+
+    function go(delta) {
+      const deck = activeDeck();
+      if (!deck) return;
+      deck.i = Math.max(0, Math.min(deck.slides.length - 1, deck.i + delta));
+      render();
+    }
+
+    // ---------- Path routing ----------
+    function setRoute(route) {
+      body.dataset.route = route;
+      backBtn.classList.toggle('visible', route !== 'landing');
+      if (route === 'general' || route === 'internal') {
+        // Reset to first slide each time a path is entered
+        decks[route].i = 0;
+        render();
+      }
+    }
+
+    document.querySelectorAll('.path-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const path = btn.dataset.path;
+        if (path === 'general' || path === 'internal') setRoute(path);
+      });
+    });
+
+    backBtn.addEventListener('click', () => setRoute('landing'));
+
+    // ---------- Step-by-step guide tree ----------
+    function activateStep(step) {
+      const slide = document.querySelector('.tree-step[data-step="' + step + '"]');
+      const slideEl = slide && slide.closest('.slide');
+      if (!slide || !slideEl) return;
+      slideEl.querySelectorAll('.tree-step').forEach((b) => b.classList.toggle('active', b.dataset.step === step));
+      slideEl.querySelectorAll('.step-panel').forEach((p) => p.classList.toggle('active', p.dataset.step === step));
+    }
+
+    function syncParentCheck() {
+      // When any sub-option (1.3a, 1.3b) is checked, mark the parent (1.3) checked too.
+      const parents = [
+        { parent: '1.3', children: ['1.3a', '1.3b'] },
+        { parent: '2.4', children: ['2.4a', '2.4b'] },
+      ];
+      parents.forEach(({ parent, children }) => {
+        const parentEl = document.querySelector('.tree-step[data-step="' + parent + '"]');
+        if (!parentEl) return;
+        const anyChildDone = children.some((c) => {
+          const el = document.querySelector('.tree-step[data-step="' + c + '"]');
+          return el && el.classList.contains('done');
+        });
+        if (anyChildDone) parentEl.classList.add('done');
+      });
+    }
+
+    document.querySelectorAll('.tree-step').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        // Clicking the checkbox toggles "done" without navigating
+        if (e.target.closest('.step-check')) {
+          btn.classList.toggle('done');
+          syncParentCheck();
+          return;
+        }
+        activateStep(btn.dataset.step);
+      });
+    });
+
+    // Option A / Option B boxes inside step 1.3 jump to their sub-step
+    document.querySelectorAll('.tree-jump').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        activateStep(btn.dataset.jump);
+      });
+    });
+
+    const treeReset = document.getElementById('tree-reset');
+    if (treeReset) {
+      treeReset.addEventListener('click', (e) => {
+        e.stopPropagation();
+        document.querySelectorAll('.tree-step.done').forEach((b) => b.classList.remove('done'));
+      });
+    }
+
+    // ---------- Copy-to-clipboard for code blocks ----------
+    document.querySelectorAll('.code-block .copy-btn').forEach((btn) => {
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const pre = btn.parentElement.querySelector('pre');
+        if (!pre) return;
+        try {
+          await navigator.clipboard.writeText(pre.innerText);
+          const original = btn.textContent;
+          btn.textContent = 'Copied!';
+          btn.classList.add('copied');
+          setTimeout(() => {
+            btn.textContent = original;
+            btn.classList.remove('copied');
+          }, 1500);
+        } catch (err) {
+          // Fallback: select the text so the user can copy manually
+          const range = document.createRange();
+          range.selectNodeContents(pre);
+          const sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(range);
+        }
+      });
+    });
+
+    document.getElementById('prev').onclick = () => go(-1);
+    document.getElementById('next').onclick = () => go(+1);
+    document.getElementById('notesBtn').onclick = () => notes.classList.toggle('visible');
+    document.getElementById('fsBtn').onclick = () => {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+      else document.exitFullscreen();
+    };
+
+    document.addEventListener('keydown', (e) => {
+      // Always allow Esc to return to landing
+      if (e.key === 'Escape' && body.dataset.route !== 'landing') {
+        setRoute('landing');
+        return;
+      }
+      const deck = activeDeck();
+      if (!deck) return;
+
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(+1); }
+      else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(-1); }
+      else if (e.key === 'Home') { deck.i = 0; render(); }
+      else if (e.key === 'End')  { deck.i = deck.slides.length - 1; render(); }
+      else if (e.key.toLowerCase() === 'n') notes.classList.toggle('visible');
+      else if (e.key.toLowerCase() === 'f') {
+        if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+        else document.exitFullscreen();
+      }
+    });
+
+    // Touch swipe — deck only
+    let x0 = null;
+    document.addEventListener('touchstart', (e) => { x0 = e.changedTouches[0].clientX; });
+    document.addEventListener('touchend', (e) => {
+      if (x0 == null) return;
+      if (!activeDeck()) { x0 = null; return; }
+      const dx = e.changedTouches[0].clientX - x0;
+      if (Math.abs(dx) > 50) go(dx < 0 ? +1 : -1);
+      x0 = null;
+    });
+
+    // Initial state: landing screen
+    setRoute('landing');
+  })();
+</script>
+
+</body>
+</html>
