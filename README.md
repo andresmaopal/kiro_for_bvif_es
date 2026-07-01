@@ -32,7 +32,7 @@ docs/                                  # Recursos de documentación (imágenes, 
 ## Requisitos previos
 
 - **Requerido:** [IDE Kiro](https://kiro.dev/) instalado.
-- **Requerido:** `Repositorio clonado o archivo zip descargado`
+- **Requerido:** `Este repositorio clonado o archivo zip descargado en su máquina local`
 
 ## Preparación
 
