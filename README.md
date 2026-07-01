@@ -54,7 +54,7 @@ mkdir -p ~/workspace-bvif
 
 Copia `.kiro/`, `bvif-samples/`, `docs/` y `README.md` — las reglas de steering, los escenarios resueltos, las capturas de apoyo y el README del proyecto. Puedes hacerlo de dos formas — elige la que se ajuste a tu entorno.
 
-#### Opción A — Clonar con git (recomendada si tienes SSH configurado)
+#### Opción A — Clonar con git (recomendada)
 
 Abre una terminal en tu carpeta de espacio de trabajo (p. ej., `cd ~/workspace-bvif/`). Luego, ejecuta:
 
