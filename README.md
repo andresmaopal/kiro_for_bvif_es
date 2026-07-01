@@ -64,11 +64,11 @@ cp -R /tmp/kiro_for_bvif/.kiro /tmp/kiro_for_bvif/bvif-samples /tmp/kiro_for_bvi
 rm -rf /tmp/kiro_for_bvif
 ```
 
-#### Opción B — Descargar el archivo fuente desde GitLab
+#### Opción B — Descargar el archivo fuente desde GitHub
 
-Si no tienes SSH configurado, navega a la página del proyecto en [https://gitlab.aws.dev/maumunoz/kiro_for_bvif](https://gitlab.aws.dev/maumunoz/kiro_for_bvif), haz clic en el botón **Code** arriba a la derecha y elige **Download source code → zip** (o cualquier otro formato de archivo).
+Desde está página en GitHub haz click en el botón `Code` ó `Código` y elige **Download ZIP**
 
-![Página del proyecto en GitLab mostrando el menú Code con la opción Download source code → zip resaltada](docs/images/gitlab-download-files.png)
+![Página del proyecto en GitLab mostrando el menú Code con la opción Download source code → zip resaltada](docs/images/github_paso_descargar.png)
 
 Descomprime el archivo, luego copia `.kiro/`, `bvif-samples/`, `docs/` y `README.md` del contenido extraído a tu carpeta de espacio de trabajo.
 
