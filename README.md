@@ -59,7 +59,7 @@ Copia `.kiro/`, `bvif-samples/`, `docs/` y `README.md` — las reglas de steerin
 Abre una terminal en tu carpeta de espacio de trabajo (p. ej., `cd ~/workspace-bvif/`). Luego, ejecuta:
 
 ```bash
-git clone [[git@ssh.gitlab.aws.dev:maumunoz/kiro_for_bvif_es.git] /tmp/kiro_for_bvif_es
+git clone [git@ssh.gitlab.aws.dev:maumunoz/kiro_for_bvif_es.git] /tmp/kiro_for_bvif_es
 cp -R /tmp/kiro_for_bvif_es/.kiro /tmp/kiro_for_bvif_es/bvif-samples /tmp/kiro_for_bvif_es/docs /tmp/kiro_for_bvif_es/README.md .
 rm -rf /tmp/kiro_for_bvif_es
 ```
