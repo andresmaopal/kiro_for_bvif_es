@@ -32,7 +32,7 @@ docs/                                  # Recursos de documentación (imágenes, 
 ## Requisitos previos
 
 - **Requerido:** [IDE Kiro](https://kiro.dev/) instalado.
-- **Opcional:** `git` en tu PATH y acceso SSH a `gitlab.aws.dev` — solo se necesita si clonas el repo vía SSH (Opción A en el Paso 2). Sin ellos, usa la ruta de descarga del zip (Opción B).
+- **Requerido:** `Repositorio clonado o archivo zip descargado`
 
 ## Preparación
 
