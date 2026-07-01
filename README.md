@@ -6,12 +6,7 @@ Este repo facilita aplicar BVIF al empaquetarlo como un flujo de trabajo de stee
 
 Ejemplos resueltos de principio a fin — cliente ficticio, documento de guion y conjunto completo de artefactos de una ejecución BVIF terminada — viven en la carpeta [`bvif-samples/`](bvif-samples/). El repo actualmente incluye dos escenarios (Precision Furniture Inc. y Clube Esportivo Bandeirantes) y puede incluir escenarios adicionales en el futuro. Consulta el [Apéndice C — Muestras resueltas](#apéndice-c--muestras-resueltas) para ver una forma sugerida de usarlos como ejercicio de aprendizaje.
 
-### Repositorios internos de AWS
-
-- **Wiki**: [AI-BVIF en la Wiki](https://w.amazon.com/bin/view/AWS/AGSTech/WWT/PrincipalTechnologists/Initiatives/AI-VMF/) — información más reciente sobre el programa, incluidos los beneficios del marco.
-- **SharePoint**: [BVIF en SharePoint](https://amazon.sharepoint.com/:f:/r/sites/tfc-transformation/Shared%20Documents/AI%20Transformation/AI-ET%20Initiative/3.AI-VMF) — narrativa original que originó la idea, conservada con fines históricos.
-
-## Qué es este repo
+## ¿Qué es este repositorio?
 
 Una carpeta `.kiro/` lista para usar que convierte un espacio de trabajo del IDE Kiro en una sesión BVIF guiada. Cuando Kiro carga, lee `.kiro/steering/bvif-rules/core-workflow.md` como una regla de steering siempre incluida, que instruye al agente para guiarte a través del proceso BVIF de 7 etapas (Descubrimiento → Métricas → Cuantificación).
 
